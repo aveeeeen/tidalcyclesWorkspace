@@ -1,0 +1,119 @@
+hush
+
+-- fetus braven segregated aura 2
+
+do
+    let autos a b = (range a b $ saw)
+    let autor c d = (range c d $ rand)
+    let autonotes e f = (range e f rand)
+    let cl channel cycles = (clutchIn channel cycles)
+    let fd channel cycles = (xfadeIn channel cycles)
+    let nt = note
+    let rtmvar = choose [2,4,8,16]
+    let mov1 = choose [0,7,5,-3]
+    let mov2 = "[12]" 
+    let mov3 ="-1" |+| "<5 4 -3 -3>" 
+    let spd = "1"
+    let stutInput = 0
+    let del a = delay a
+    let delT a = delaytime a
+    let delF a = delayfeedback a
+    let void = fast 1
+    let num = 8
+    let swng = (swingBy (4/24) 8) -- the sweet sopt (4/28) or (4/24)
+    -- 
+    -- TEMPO
+    --
+    setcps (120/240)
+    --
+    -- FUNCTION GROUPS
+    --
+    let func1 =  
+            void
+            .fast (spd)
+            . every 4 (
+                (# crush "8 .. 4")
+                .(# cut 16)
+            )
+    let func2 =
+            void
+            .whenmod 8 7 (
+                void
+                .(# hpf (fast 1 $ "50 .. 1" * "100"))
+                .(# hpq 0.2)
+            )
+    let func3 = 
+            void
+            .whenmod 8 1 (
+                void
+                . (#legato "1")
+                . (# pan (autos 0 1))
+                . (#speed "1 -1 1 0.5 1 0.5 0.5 1 -0.5")
+                -- . stut' 1 (6/32/4) (
+                . stut' 4 (6/32) (
+                    void
+                    -- . (#legato 0.3)
+                    . iter "2"
+                    . (#speed "1 .. -1 .. 0.5")
+                    . always (
+                        void
+                       --  . density "0.5,4 .. 1"
+                    )
+                )
+            )
+    --
+    -- FUNCTION SWITCHES
+    --
+    let func =
+            void
+            .func1
+            .func2
+            .func3
+    --
+    -- TRACK MANIPULATION
+    --
+    let trackio = do
+            -- p 1 silence
+            -- p "drum" silence
+            p 3 silence
+    p 1 
+        $ (
+            loopAt 8
+            . chop 8
+            -- . slice 8 "[[5] [2] [17] [1]]*16"
+            . slice 16 "[[0 .. 7]]*[ 8]"
+            -- . slice 8 "[[0 .. 7]]*[2]"
+            . always (#pan 0.5)
+            . every 4 (#size 0.4)
+        )
+        $ func
+        -- $ "fetus:3"
+        $ "looparp"
+        # room 0.3
+        # size 0.2
+        # cut 16
+        # orbit 1
+    p "drum"
+        $ func
+        $ struct (binary ("1228 3898"))
+        $ always (
+            void
+            . (#speed 1)
+        )
+        $ stack
+        [
+            "~"
+            ,"[bd] [~ oh] [~ bd] [~ bd]"
+            ,"hh(4,8)*2"
+            , chop 8 
+            $ "psr(5,8)*<1 2>"
+            # n (irand 10)
+            # hpf 2000
+            # cut 8
+            # crush 5
+            , "~ clap(3,8)"
+            # rel 0.4
+        ]
+    trackio
+
+    

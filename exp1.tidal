@@ -1,0 +1,154 @@
+hush
+
+-- new project for EP made completely inside tidal
+
+do
+    let autos a b = (range a b $ saw)
+    let autor c d = (range c d $ rand)
+    let autonotes e f = (range e f rand)
+    let cl channel cycles = (clutchIn channel cycles)
+    let fd channel cycles = (xfadeIn channel cycles)
+    let nt = note
+    let rtmvar = choose [2,4,8,16]
+    let mov1 = choose [0,7,5,-3]
+    let mov2 = "[12]" 
+    let mov3 ="0" |+| "5 4 -3 -3" 
+    let spd = "1"
+    let stutInput = 0
+    let del a = delay a
+    let delT a = delaytime a
+    let delF a = delayfeedback a
+    let void = fast 1
+    let num = 8
+    let swng = (swingBy (4/24) 8) -- the sweet sopt (4/28) or (4/24)
+    let center = 
+            always (#pan 0.5)
+    let delunit a b c =
+            (# delay a)
+            .(#delaytime b)
+            .(#delayfeedback c)
+    -- 
+    -- TEMPO
+    --
+    setcps (170/240)
+    --
+    -- FUNCTION GROUPS
+    --
+    let func1 =  
+            void
+            .fast (spd)
+            . every 4 (
+                (# crush "8 .. 4")
+                .(# cut 16)
+            )
+    let func2 =
+            void
+            .whenmod 8 7 (
+                void
+                .(# hpf (fast 0.5 $ "50 .. 1" * "100"))
+                .(# hpq 0.2)
+            )
+    let func3 = 
+            void
+            .whenmod 8 1 (
+                void
+                . (#legato "1")
+                . (# pan (autos 0 1))
+                . (#speed "1 -1 1 0.5 1 0.5 0.5 1 -0.5")
+                -- . stut' 1 (6/32/4) (
+                . stut' 4 (6/32) (
+                    void
+                    -- . (#legato 0.3)
+                    . iter "4"
+                    . (#speed "1 .. -1 .. 0.5")
+                    . always (
+                        void
+                       --  . density "0.5,4 .. 1"
+                    )
+                )
+            )
+    --
+    -- FUNCTION SWITCHES
+    --
+    let func =
+            void
+            .func1
+            .func2
+            .func3
+    --
+    -- TRACK MANIPULATION
+    --
+    let trackio = do
+            -- p 1 silence
+            -- p "drum" silence
+            p "synths" silence
+            p 0 silence
+    p 1 
+        $ func
+        $ whenmod 8 7(
+            struct (binary "111 333")
+        ) 
+        $ stack
+        [
+            -- fast 0.5 $ "bd [~ hh] sn [oh bd] [bd hh] [hh oh] sn [oh bd]"  ,
+            "psr*8"
+            # legato (autos 0.2 1)
+            # n (irand 4)
+            # hpf 1000
+        ]
+        # orbit 0
+    p "synths"
+        $ func
+        $ struct (binary "223 435")
+        $ (
+            always (# legato 2)
+            -- . jux rev
+            . chop 1
+            . slice 8 "[0 .. 7]*2"
+            . every 2 (
+                delunit 0.4 (1/4) 0.4
+            )
+        )
+        $ "supersaw"
+        # nt mov3 |+| nt "-12" |+| nt "-4"
+        # voice "0.1 .. 0.5"
+        # decay 1.6
+        # semitone (0) 
+        # resonance 0.1
+        # lfo 4
+        # rate 4
+        # pitch1 (autos 3 0.2) 
+        # gain 0.8
+        # orbit 1
+    p 2
+        $ (
+            func2
+            .struct ("0 [0 1] 0 [1 0]")
+            .slice 8 "2"
+        )
+        $ (
+           delunit 0.3 (1/4) 0.4
+        )  
+        $ "cpad"
+        # legato 0.4
+        # nt "0"
+        # gain 0.9
+        # cut 16
+        # orbit 2
+        -- # gain "0 [0 1] 0 [1 0]"
+    p 3
+        $ (
+            struct (binary 122).
+            sometimes (struct (binary 224)).
+            (#speed "1 -1 1 2 1 1 1 1 -0.5")
+        )
+        $ (
+            func1
+            .func2
+        )
+        $ "yaoya"
+        # nt "5"
+        # cut 4
+        # legato 0.8
+        # orbit 3
+    trackio
