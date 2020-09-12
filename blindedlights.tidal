@@ -1,0 +1,154 @@
+hush
+
+-- new project for EP made completely inside tidal
+
+do
+    let autos a b = (range a b $ saw)
+    let autor c d = (range c d $ rand)
+    let autonotes e f = (range e f rand)
+    let cl channel cycles = (clutchIn channel cycles)
+    let fd channel cycles = (xfadeIn channel cycles)
+    let nt = note
+    let rtmvar = choose [2,4,8,16]
+    let mov1 = choose [0,7,5,-3]
+    let mov2 = "[12]" 
+    let mov3 ="0" |+| "<5 4 -3 -3>" 
+    let spd = "1"
+    let stutInput = 0
+    let del a = delay a
+    let delT a = delaytime a
+    let delF a = delayfeedback a
+    let void = fast 1
+    let num = 8
+    let swng = (swingBy (4/24) 8) -- the sweet sopt (4/28) or (4/24)
+    let center = 
+            always (#pan 0.5)
+    let delunit a b c =
+            (# delay a)
+            .(#delaytime b)
+            .(#delayfeedback c)
+    let roomunit a b c =
+            (# room a)
+            .(# size b)
+            .(# dry c)
+    let autopan = (#pan (autos 0 1))
+    -- 
+    -- TEMPO
+    --
+    setcps (120/240)
+    --
+    -- FUNCTION GROUPS
+    --
+    let send =
+            roomunit 0.6 0.7 0.9
+            .delunit 0 0 0
+    let func1 =  
+            void
+            .fast (spd)
+            . every 4 (
+                (# crush "8 .. 4")
+                .(# cut 16)
+            )
+    let func2 =
+            void
+            .whenmod 8 8 (
+                void
+                .(# hpf (fast 0.5 $ "50 .. 1" * "100"))
+                .(# hpq 0.2)
+            )
+    let func3 = 
+            void
+            .every 2 (
+                void
+                -- .(# binshift "[10 .. 1]*0.8")
+                -- .(# legato 0.5)
+                .fast 1
+            )
+            . stut' 2 (4/32)(
+                    jux (slow 2)
+                    -- .(# binshift "[10 .. 1]*0.8")
+            )
+    --
+    -- FUNCTION SWITCHES
+    --
+    let func =
+            void
+            .func1
+            .func2
+            .func3
+    --
+    -- NOTE MANIPULATION
+    --
+    let masterPitch =
+            (|+| nt "-5").
+            (|+| nt "[0 [~ 12] 7 0]*2").
+            slow 4.
+            (|+| nt "<5 9 7 5>")
+    --        
+    -- TRACK MANIPULATION
+    --
+    let trackio = do
+            -- p 1 silence
+            -- p 2 silence
+            -- p 3 silence
+            -- p "midi" silence
+            p "synths" silence
+            p 0 silence
+    let filter = 
+            every 1 (    
+                (#lpf ("[100 .. 1] * 2" * "[100 .. 1]  * 8" * "[1]"))
+                . (#lpq 0.2)
+            )
+    p 1
+        $ (
+            void
+            .filter
+            -- .loopAt "8"
+            -- .fast 2
+            -- .slice 16 ""
+            .slice 16 ("<12 22 2*[<1 2 4 8>?]>*<8 16>")
+        ) 
+        -- $ "slowbreaks"
+        $ "human"
+        # n 1
+        # legato 0.7
+        # orbit 1
+        # shape 0.6
+    p 2
+        $ (
+            void
+            -- .func
+            -- .slow 2
+            -- .slice 16 "[0 .. 31]"
+            .slice 8 "[~ <12 43 45 21>]*8"
+            .(#legato 0.9)
+            .(# speed "1")
+        )
+        $ stack
+        [
+            "~"
+            -- , "amb"
+            , "loopbas" # n 1 # nt 1 # shape 0.4
+        ]
+        # orbit 2 
+    p 3
+        $ (
+            void
+            -- .func
+            -- .(#legato 0.6)
+            -- . striate 2
+        )
+        -- $ struct (binary "333")
+        -- $ send
+        $ stack
+        [   
+           "bd*4"
+           ,"[~ sn]* 2"
+           ,"hh*8"
+           ,"[[~ oh]*4]?"
+           ,"psr(5,8)*<1 2>" # n (irand 10) # hpf 2000 # cut 8
+        ]
+        # orbit 3
+    trackio
+
+    hush

@@ -27,6 +27,7 @@ do
             (# delay a)
             .(#delaytime b)
             .(#delayfeedback c)
+    let autopan = (#pan (autos 0 1))
     -- 
     -- TEMPO
     --
@@ -50,16 +51,16 @@ do
             )
     let func3 = 
             void
-            .whenmod 8 1 (
+            .someCyclesBy 2 (
                 void
                 . (#legato "1")
-                . (# pan (autos 0 1))
+                -- . (# pan (autos 0 1))
                 . (#speed "1 -1 1 0.5 1 0.5 0.5 1 -0.5")
                 -- . stut' 1 (6/32/4) (
-                . stut' 4 (6/32) (
+                . stut' 4 (4/32) (
                     void
                     -- . (#legato 0.3)
-                    . iter "4"
+                    . iter "2"
                     . (#speed "1 .. -1 .. 0.5")
                     . always (
                         void
@@ -80,75 +81,51 @@ do
     --
     let trackio = do
             -- p 1 silence
-            -- p "drum" silence
+            ---p "drum" silence
             p "synths" silence
             p 0 silence
     p 1 
         $ func
         $ whenmod 8 7(
-            struct (binary "111 333")
+            void
+            .struct (binary "100")
         ) 
         $ stack
         [
-            -- fast 0.5 $ "bd [~ hh] sn [oh bd] [bd hh] [hh oh] sn [oh bd]"  ,
-            "psr*8"
-            # legato (autos 0.2 1)
-            # n (irand 4)
-            # hpf 1000
+            fast 1 $ "hh [~ hh] hh [oh hh] [~ hh] [hh oh] hh [oh hh]"  ,
+            "~ sn" # speed 0.5,
+            -- (#pan (autos 1 0)) $ "psr*16" # legato (autos 0.2 1) # n (irand 4) # hpf 1000,
+            "bd [~ bd] ~ [~ bd]"
         ]
         # orbit 0
     p "synths"
         $ func
-        $ struct (binary "223 435")
+        $ struct (binary "435")
         $ (
             always (# legato 2)
-            -- . jux rev
-            . chop 1
-            . slice 8 "[0 .. 7]*2"
+            . autopan
+            . chop 8
             . every 2 (
                 delunit 0.4 (1/4) 0.4
             )
         )
         $ "supersaw"
-        # nt mov3 |+| nt "-12" |+| nt "-4"
+        # nt mov3 |+| nt "-12" |+| nt "-4" |+| nt "<0 7>"
         # voice "0.1 .. 0.5"
-        # decay 1.6
+        # decay 0.7
         # semitone (0) 
         # resonance 0.1
-        # lfo 4
-        # rate 4
+        # lfo 2
+        # rate 8
         # pitch1 (autos 3 0.2) 
-        # gain 0.8
+        # gain 0.7
         # orbit 1
+        # crush 3
     p 2
         $ (
             func2
             .struct ("0 [0 1] 0 [1 0]")
-            .slice 8 "2"
+            .slice 8 (irand 7)
         )
-        $ (
-           delunit 0.3 (1/4) 0.4
-        )  
-        $ "cpad"
-        # legato 0.4
-        # nt "0"
-        # gain 0.9
-        # cut 16
-        # orbit 2
-        -- # gain "0 [0 1] 0 [1 0]"
-    p 3
-        $ (
-            struct (binary 122).
-            sometimes (struct (binary 224)).
-            (#speed "1 -1 1 2 1 1 1 1 -0.5")
-        )
-        $ (
-            func1
-            .func2
-        )
-        $ "yaoya"
-        # nt "5"
-        # cut 4
-        # legato 0.8
-        # orbit 3
-    trackio
+    p "midi"
+        $ midicmd "midiClock*48" # s "midi"
