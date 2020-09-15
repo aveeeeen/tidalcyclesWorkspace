@@ -58,11 +58,12 @@ do
             )
     let func3 = 
             void
-            .every 2 (
+            .every 16 (
                 void
-                -- .(# binshift "[10 .. 1]*0.8")
-                -- .(# legato 0.5)
-                .fast 1
+                .(# binshift "[1 .. 2]*8")
+                .(# speed ("1 .. 8" * "-1"))
+                .chop 2
+                .fast 2
             )
     --
     -- FUNCTION SWITCHES
@@ -88,6 +89,7 @@ do
             p 2 silence
             -- p 3 silence
             -- p "midi" silence
+            p "kic" silence
             p "synths" silence
             p 0 silence
     --
@@ -102,52 +104,49 @@ do
     --
     --
     --
-    p 1
+    p "drums"
+        $ (
+            func
+            . whenmod 8 2 (
+                struct (binary "234")
+            )
+        )
+        $ stack
+        [
+            loopAt 4 $ slice 16 "[8 29 37 18 492 27 2 3]*2" $ "tokyo" # n 2 # shape 0.7 # crush ("3 .. 7" * " 12 .. 3"), -- # hpf 3000,
+            struct "1 0 1 1 1 0 1 1" $ loopAt 4 $ randslice 16 $ "tokyo" # n 2 # hpf 3000 # hpq 0.1,
+            "~ sn ~ sn" # n 1 # shape 0.5 # crush 3,
+            "~ psr(3,8)*2" # n (irand 8) # hpf 3000
+        ]
+        # legato 0.7
+        # orbit 1
+    p "bass"
         $ (
                 (#lpf ("[10 .. 1] * 8" * "[1 .. 10]/2 [10 .. 1]/2" * "20"))
-                .(#lpq 0.4)
+                .(#lpq 0.2)
                 .struct "[0 1 1 1 0 1 1 1]*2 "
                 .(#speed "[1 [1 2] -1*[1 2] 1 0.5 1 [0.5 2] 1]*1")
-                .(#nt ("<-3 -5 -7>/4"))
+                . func 
+                -- .(#nt ("<-3 -5 -7>/4"))
                 -- .(# hpf ("50" * "[1 .. 20]/2 [20 .. 1]/2" ))
                 -- .(# hpq 0.2)
         ) 
         $ "dbas" 
+        -- # note "12"
         # shape 0.7
         # n 2
         # legato 0.8
         # gain 0.8
-    p 2
-        $ (
-            func
-            .slice 8 "2  3  2  2"
-        )
-        $ "amb"
-        # gain 1.2
-        # cut 2
-    p 3
+    p "kic"
         $ (
             void
-            .func
-            .(#legato 0.6)
-            .slow 1
-            -- . striate 2
-            .filter
+            -- func
         )
-        -- $ struct (binary "333")
-        $ send
-        $ stack
-        [   
-            jux rev $ struct ("[t*8]%8") $ loopAt 2 $ chop 8 $ "kimo" # hpf 3000,
-            "psr*16" # n (irand 4) #release 0.3 # hpf 3000 ,
-            -- struct ("1 1 1 1") $ "gab" # speed 0.5 # n 0 # gain 1.1 # legato 0.4 # hpf 100,
-            -- struct "[1 1] 0 1 [0 1] [1] [0 1] 1 1" 
-            -- struct "1 1 1 1"
-            -- $ "bd" # gain 1.2,
-            "~ sn ~ [~ sn]" # n 1 # legato 0.4 # hpf 100 # distort 2 # triode 5,
-            -- masterPitch $ "yaoya" # legato 0.9 # lpf 200 # nt "0",
-            "[hh] [hh oh] ~ oh hh",
-            struct (binary "331") $ "~ clap" # lpf ((choose [2,3,4,6,8]) * "2000*4 1000*4") # lpq 0.2 # crush 2 # shape 0.5 # release 0.7 # n 1 # cut 1
+        $ stack 
+        [
+            "gaba*4" # shape 0.4 # legato 0.5,
+            "hh*16" # n 1,
+            struct "0 1 0 [0 1] 1 0 0 1" $ "oh" # legato 0.8
         ]
-        # orbit 3
     trackio
+    
