@@ -41,7 +41,7 @@ do
     --
     let send =
             roomunit 0.3 0.7 0.9
-            .delunit 0 0 0
+            .delunit 0.3 (1/8) 0.5
     let func1 =  
             void
             .fast (spd)
@@ -86,8 +86,8 @@ do
     --
     let trackio = do
             p 1 silence
-            p "bass" silence
-            -- p 3 silence
+            -- p "bass" silence
+            -- p "pad" silence
             -- p "drums" silence
             -- p "kic" silence
             p "synths" silence
@@ -97,9 +97,9 @@ do
     --
     let filter = 
           every 1 (    
-                (#lpf ("[100 .. 1] * 4" * "[10 .. 1] * 1" * "[10 .. 1]" * "1"))
+                (#lpf ("[10 .. 1] * 8" * "[10 .. 1] * 1" * "[10 .. 1]" * "10"))
                 -- (#hpf ("[1 .. 10] * 8" * "[5 .. 10] * 2" * "[1 .. 10]" * "100"))
-                . (#hpq 0.1)
+                . (#lpq 0.2)
           )
     --
     --
@@ -113,13 +113,25 @@ do
         )
         $ stack
         [
-            loopAt 4 $ slice 32 "[0 .. 7]*4*2" $ "tokyo" # n 0 # shape 0.7 # crush ("3 .. 7" * " 12 .. 3"), -- # hpf 3000,
-            struct "1 0 1 1 1 0 1 1" $ loopAt 4 $ randslice 16 $ "tokyo" # n 4 # hpf 3000 # hpq 0.1,
+            loopAt 4 $ slice 32 "[0 .. 7]*4*2*<4 2 8>" $ "tokyo" # n 2 # shape 0.7 # crush ("3 .. 7" * " 12 .. 3") # hpf 4000,
+            struct "1 0 1 1 1 0 1 1" $ loopAt 4 $ randslice 32 $ "tokyo" # n 3 #shape 0.8,-- # hpf 3000 # hpq 0.1,
             "~ sn ~ sn" # n 1 # shape 0.5 # crush 3,
-            "~ psr(3,8)*2" # n (irand 8) # hpf 3000
+            "~ psr*16" # n (irand 8) # hpf 3000
         ]
         # legato 0.7
         # orbit 1
+    p "pad"
+        $ (
+            void
+            .func
+            .struct "1*[4 12 16 16]/2"
+            .randslice 4
+            .jux rev
+            .filter
+            .send
+        )
+        $ "pad"
+        # legato 0.3
     p "bass"
         $ (
                 (#lpf ("[10 .. 1] * 8" * "[1 .. 10]/2 [10 .. 1]/2" * "20"))
@@ -140,14 +152,14 @@ do
     p "kic"
         $ (
             void
-            -- .filter
-            -- func
+            .filter
+            .func
         )
         $ stack 
         [
-            struct "[1 1] [0 1] 0 [0 1] " $ "bd" # n 17 # shape 0.4 # legato 0.8 ,
+            "[bd*2] sn [~ bd] [~ sn]",
             "hh*16" # n 1,
-            struct "0 1 0 [0 1] 1 0 0 1" $ "oh" # legato 0.8
+            "~ oh ~ oh"
         ]
     trackio
     
