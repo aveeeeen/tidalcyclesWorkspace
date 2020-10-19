@@ -35,7 +35,7 @@ do
     -- 
     -- TEMPO
     --
-    setcps (130/240)
+    setcps (140/240)
     --
     -- FUNCTION GROUPS
     --
@@ -46,24 +46,25 @@ do
             void
             .fast (spd)
             . every 4 (
-                (# crush "8 .. 4")
-                .(# cut 16)
+                (# crush "8 .. <8 4>")
             )
+            . chop 1
+            . (#shape 0.8)
+            . (# triode "0.3 .. 0.7")
+            . autopan
     let func2 =
             void
-            .whenmod 8 7 (
+            .whenmod 8 8 (
                 void
                 .(# hpf (fast 0.5 $ "50 .. 1" * "100"))
                 .(# hpq 0.2)
             )
     let func3 = 
             void
-            .every 16 (
+            .every 32 (
                 void
-                .(# binshift "[1 .. 2]*8")
-                .(# speed ("1 .. 8" * "-1"))
+                .(# speed ("1 .. 4" * "-1"))
                 .chop 2
-                .fast 2
             )
     --
     -- FUNCTION SWITCHES
@@ -87,8 +88,8 @@ do
     let trackio = do
             p 1 silence
             -- p "bass" silence
-            -- p "pad" silence
-            -- p "drums" silence
+            p "pad" silence
+            p "drums" silence
             -- p "kic" silence
             p "synths" silence
             p 0 silence
@@ -97,7 +98,7 @@ do
     --
     let filter = 
           every 1 (    
-                (#lpf ("[10 .. 1] * 8" * "[10 .. 1] * 1" * "[10 .. 1]" * "10"))
+                (#lpf ("[10 .. 1] * 2" * "[10 .. 1] * 4" * "[10 .. 1]" * "10"))
                 -- (#hpf ("[1 .. 10] * 8" * "[5 .. 10] * 2" * "[1 .. 10]" * "100"))
                 . (#lpq 0.2)
           )
@@ -107,48 +108,55 @@ do
     p "drums"
         $ (
             func
+            . filter
             . whenmod 8 2 (
                 struct (binary "234")
             )
         )
         $ stack
         [
-            loopAt 4 $ slice 32 "[0 .. 7]*4*2*<4 2 8>" $ "tokyo" # n 2 # shape 0.7 # crush ("3 .. 7" * " 12 .. 3") # hpf 4000,
-            struct "1 0 1 1 1 0 1 1" $ loopAt 4 $ randslice 32 $ "tokyo" # n 3 #shape 0.8,-- # hpf 3000 # hpq 0.1,
+            loopAt 4 $ slice 8 "[0 .. 7]*4*2*<4 2>" $ "tokyo" # n 2 # shape 0.7 # crush ("3 .. 7" * " 12 .. 3") # hpf 100,
+            struct "1 0 1 1 1 0 1 1" $ loopAt 4 $ randslice 32 $ "tokyo" # n 5 #shape 0.8,-- # hpf 3000 # hpq 0.1,
             "~ sn ~ sn" # n 1 # shape 0.5 # crush 3,
             "~ psr*16" # n (irand 8) # hpf 3000
         ]
-        # legato 0.7
+        # legato 0.8
         # orbit 1
     p "pad"
         $ (
             void
-            .func
-            .struct "1*[4 12 16 16]/2"
+            .struct "1*[16]/4"
             .randslice 4
+            .chop 8
             .jux rev
             .filter
             .send
+            .(#lpf 0.0)
         )
         $ "pad"
-        # legato 0.3
+        # shape 0.4
+        # speed "<12>/4" |*| speed "1 .. 0.25" |*| speed "0.05"
+        # orbit 2
+        # legato (slow 4 $  range 0.9 0.1 (tri))
     p "bass"
         $ (
                 (#lpf ("[10 .. 1] * 8" * "[1 .. 10]/2 [10 .. 1]/2" * "20"))
                 .(#lpq 0.2)
-                .struct "[0 1 1 1 0 1 1 1]*2 "
-                .(#speed "[1 [1 2] -1*[1 2] 1 0.5 1 [0.5 2] 1]*1")
-                . func 
-                -- .(#nt ("<-3 -5 -7>/4"))
+                .struct "[0 1 1 1 0 1 1 1]/<4 2 8> "
+                -- .(#speed "[1 [1 2] -1*[1 2] 1 0.5 1 [0.5 2] 1]*1")
+                .func 
+                .(#nt ("<0 7 5 0>/4"))
                 -- .(# hpf ("50" * "[1 .. 20]/2 [20 .. 1]/2" ))
                 -- .(# hpq 0.2)
+                .chop 2
         ) 
         $ "dbas" 
+        # orbit 5
         -- # note "12"
         # shape 0.7
         # n 2
         # legato 0.9
-        # gain 0.8
+        # gain 0.9
     p "kic"
         $ (
             void
@@ -157,9 +165,17 @@ do
         )
         $ stack 
         [
-            "[bd*2] sn [~ bd] [~ sn]",
-            "hh*16" # n 1,
-            "~ oh ~ oh"
+            -- "gaba*4" # shape 0.6 # release 0.6 ,
+            "hh*16",
+            "[~ oh]*<4>",
+            randslice 16 $ "[slowbreaks*4]*4" * "2 .. 32" # n 2 #shape 0.5 # legato 0.2
         ]
+        -- # hpf 400
+        # distort 0.3
+        # orbit 4
+        # gain 0.96
+        # legato "0.8" -- 
+        -- "1 .. 0.5 .. 0.5 .. 1"
     trackio
+
     
