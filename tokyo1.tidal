@@ -41,37 +41,46 @@ do
     --
     let send =
             roomunit 0.3 0.7 0.9
-            .delunit 0.3 (1/8) 0.5
-    let func1 =  
+            .delunit 0.4 (1/4) 0.2
+    let fx1 =  
             void
             .fast (spd)
             . every 4 (
                 (# crush "8 .. 4")
                 .(# cut 16)
             )
-    let func2 =
+    let fx2 =
             void
             .whenmod 8 7 (
                 void
                 .(# hpf (fast 0.5 $ "50 .. 1" * "100"))
                 .(# hpq 0.2)
             )
+    let fx = 
+            void
+            .fx1
+            .fx2
     let func3 = 
             void
-            .every 16 (
+            .every 1 (
                 void
-                .(# binshift "[1 .. 2]*8")
-                .(# speed ("1 .. 8" * "-1"))
+                .(# speed ("0 .. 7" * "-1"))
                 .chop 2
-                .fast 2
+                .every "<4 9 12>" (
+                    chop 24
+                )
+                .fast 1
             )
+    let func1 = 
+            void
+            .slow "4 .. 2 .. 1 .. 1/8"
     --
     -- FUNCTION SWITCHES
     --
     let func =
             void
             .func1
-            .func2
+            -- .func2
             .func3
     --
     -- NOTE MANIPULATION
@@ -97,7 +106,7 @@ do
     --
     let filter = 
           every 1 (    
-                (#lpf ("[10 .. 1] * 8" * "[10 .. 1] * 1" * "[10 .. 1]" * "10"))
+                (#lpf ("[10 .. 1] * 2" * "[10 .. 1] * 1" * "[10 .. 1]" * "80"))
                 -- (#hpf ("[1 .. 10] * 8" * "[5 .. 10] * 2" * "[1 .. 10]" * "100"))
                 . (#lpq 0.2)
           )
@@ -106,7 +115,10 @@ do
     --
     p "drums"
         $ (
-            func
+            void
+            .func
+            .send
+            .fx
             . whenmod 8 2 (
                 struct (binary "234")
             )
@@ -124,21 +136,27 @@ do
         $ (
             void
             .func
-            .struct "1*[4 12 16 16]/2"
+            .fx
+            .struct "[~ [1 ~ ]]"
             .randslice 4
             .jux rev
             .filter
+            .(#hpf 500)
             .send
         )
         $ "pad"
         # legato 0.3
     p "bass"
         $ (
-                (#lpf ("[10 .. 1] * 8" * "[1 .. 10]/2 [10 .. 1]/2" * "20"))
+                (#lpf ("[10 .. 1] * 8" * "[1 .. 10]/2 [10 .. 1]/2" * "50"))
                 .(#lpq 0.2)
                 .struct "[0 1 1 1 0 1 1 1]*2 "
+                .every 4 (
+                    struct "[0 0 1 1 0 1 0 1]*2"
+                )
                 .(#speed "[1 [1 2] -1*[1 2] 1 0.5 1 [0.5 2] 1]*1")
-                . func 
+                .fx
+                -- .func 
                 -- .(#nt ("<-3 -5 -7>/4"))
                 -- .(# hpf ("50" * "[1 .. 20]/2 [20 .. 1]/2" ))
                 -- .(# hpq 0.2)
@@ -152,12 +170,16 @@ do
     p "kic"
         $ (
             void
+            .fx
             .filter
-            .func
+            -- .func
+            .every 8 (
+                chop 4
+            )
         )
         $ stack 
         [
-            "[bd*2] sn [~ bd] [~ sn]",
+            every 4 (struct "[0 1 1 0]*4") $  "[bd*2] sn [~ bd] [~ sn]" # shape 0.6,
             "hh*16" # n 1,
             "~ oh ~ oh"
         ]
