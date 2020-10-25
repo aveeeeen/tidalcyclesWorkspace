@@ -1,0 +1,80 @@
+--monoliph set next segregated aura 3
+
+setcps (140/240)
+
+hush
+
+do 
+    let trackio = do  
+        -- p "a" silence 
+        p "d" silence 
+        p "dd" silence
+        p "" silence 
+    let fx = 
+            void
+            .whenmod 8 0 (
+                void
+                .(# hpf (fast 0.5 $ "50 .. 1" * "50"))
+                .(# hpq 0.2)
+            )
+            .send
+        func =
+            void
+            .func1
+            -- .func2
+            .func3
+    ---
+    ---
+    p "a" -- 4 samples 0 1 are beat centric ,2 pads, 3 bass and pads
+        $ (
+            void
+            .func
+            .fx
+            .la 8
+            -- .filter "hpf" "10" "[1]*4"
+            -- .randslice 16
+            .big 0.6 0.9
+        )
+        $ stack
+        [
+            ""
+            ,randslice 16 $ fast 4 $ randcat ["1*4"] # s "a" # n "3"
+            -- ,slice 16 "[4 . 2 23 . 14 . 6 ]*4" $ randcat ["1*16"] # s "a" # n "2"
+            -- ,slice 16 "[4 . 2 23 . 14 . 6 ]*4" $ randcat ["[1*16] *<2>"] # s "a" # n "0"
+        ]
+        # l 0.8
+        # orbit 1
+    p "dd"  
+        $ (
+            void
+            .fx
+            -- .func
+            .big 0.5 0.93
+            .(# crush "2  .. 8")
+        )
+        $ stack [
+            ""
+            -- ,st "0 . 0 1 . 0 . 1" $ "clap" # c 1 # release 0.8
+            -- ,st "1(3,8)" $ "bd"
+            ,"hh*16?,[~ oh]*4"
+        ]
+        # orbit 2
+    p "d" -- tokyo drums
+        $ (
+            void
+            .fx
+            -- .func
+            .la 4
+            .filter "lpf" "20" "[1]*4"
+            .big 0.5 0.93
+            -- .tame
+            -- .chop 4
+            .(# crush "2  .. 8")
+        )
+        -- $ st "1*8" 
+        $ slice 16 "[1 . 34 234 . <33 [523 64]> . 5 <4 [ 23 43]>]*4" $ "tokyo" # n "9" 
+        # l 1
+        # orbit 3
+    trackio
+
+hush

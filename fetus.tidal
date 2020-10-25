@@ -37,20 +37,20 @@ do
             )
     let func2 =
             void
-            .whenmod 8 7 (
+            .whenmod 8 8 (
                 void
                 .(# hpf (fast 1 $ "50 .. 1" * "100"))
                 .(# hpq 0.2)
             )
     let func3 = 
             void
-            .whenmod 8 1 (
+            .whenmod 8 0 (
                 void
                 . (#legato "1")
                 . (# pan (autos 0 1))
                 . (#speed "1 -1 1 0.5 1 0.5 0.5 1 -0.5")
                 -- . stut' 1 (6/32/4) (
-                . stut' 4 (6/32) (
+                . stut' "4 .. 2" (2/32) (
                     void
                     -- . (#legato 0.3)
                     . iter "2"
@@ -78,33 +78,34 @@ do
             p 3 silence
     p 1 
         $ (
-            loopAt 8
-            . chop 8
-            -- . slice 8 "[[5] [2] [17] [1]]*16"
-            . slice 16 "[[0 .. 7]]*[ 8]"
+            void
+            -- loopAt 8
+            . slice 8 "[[5] [2] [17] [1]]"
+            . slice 16 "[[0 .. 7]]"
             -- . slice 8 "[[0 .. 7]]*[2]"
             . always (#pan 0.5)
             . every 4 (#size 0.4)
         )
         $ func
-        -- $ "fetus:3"
-        $ "looparp"
+        $ "fetus:3"
+        -- $ "looparp"
         # room 0.3
         # size 0.2
         # cut 16
         # orbit 1
     p "drum"
         $ func
-        $ struct (binary ("1228 3898"))
+        $ struct (binary ("1222"))
         $ always (
             void
-            . (#speed 1)
+            . (#speed "1 .. 2")
+            . fast "1 4"
         )
         $ stack
         [
             "~"
             ,"[bd] [~ oh] [~ bd] [~ bd]"
-            ,"hh(4,8)*2"
+            -- ,"hh(4,8)*2"
             , chop 8 
             $ "psr(5,8)*<1 2>"
             # n (irand 10)

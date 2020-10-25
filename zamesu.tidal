@@ -2,123 +2,34 @@ hush
  
 -- new project for EP made completely inside tidal
 
+setcps (140/240)
+
 do
-    let autos a b = (range a b $ saw)
-    let autor c d = (range c d $ rand)
-    let autonotes e f = (range e f rand)
-    let cl channel cycles = (clutchIn channel cycles)
-    let fd channel cycles = (xfadeIn channel cycles)
-    let nt = note
-    let rtmvar = choose [2,4,8,16]
-    let mov1 = choose [0,7,5,-3]
-    let mov2 = "[12]" 
-    let mov3 ="0" |+| "<5 4 -3 -3>" 
-    let spd = "1"
-    let stutInput = 0
-    let del a = delay a
-    let delT a = delaytime a
-    let delF a = delayfeedback a
-    let void = fast 1
-    let num = 8
-    let swng = (swingBy (4/24) 8) -- the sweet sopt (4/28) or (4/24)
-    let center = 
-            always (#pan 0.5)
-    let delunit a b c =
-            (# delay a)
-            .(#delaytime b)
-            .(#delayfeedback c)
-    let roomunit a b c =
-            (# room a)
-            .(# size b)
-            .(# dry c)
-    let autopan = (#pan (autos 0 1))
-    -- 
-    -- TEMPO
-    --
-    setcps (140/240)
-    --
-    -- FUNCTION GROUPS
-    --
-    let send =
-            roomunit 0.3 0.7 0.9
-            .delunit 0.3 (1/8) 0.5
-    let func1 =  
-            void
-            .fast (spd)
-            . every 1
-             (
-                (# crush "8 .. <8 1>")
-            )
-            . chop 16
-            . (#shape 0.8)
-            . (# triode "0.3 .. 0.7")
-            -- . autopan
-    let func2 =
-            void
-            . chop 1
-            . (#shape 0.8)
-            . (# triode "0.3 .. 0.7")
-    let func3 = 
-            void
-            .whenmod 8 0 (
-                void
-                .(# hpf (fast 0.5 $ "50 .. 1" * "100"))
-                .(# hpq 0.2)
-            )
-    --
-    -- FUNCTION SWITCHES
-    --
-    let func =
-            void
-            .func1
-            .func2
-            -- .func3
-    --
-    -- NOTE MANIPULATION
-    --
-    let masterPitch =
-            (|+| nt "-5").
-            (|+| nt "[0 [~ 12] 7 0]*2").
-            slow 4.
-            (|+| nt "<5 9 7 5>")
-    --        
-    -- TRACK MANIPULATION
-    --
-    let trackio = do
-            p 1 silence
-            -- p "bass" silence
-            ---p "pads" silence
-            -- p "rand" silence
-            -- p "drums" silence
-            -- p "kic" silence
-            p "synths" silence
-            p 0 silence
-    --
-    -- filters
-    --
-    let filter = 
-          every 1 (    
-                (#lpf ("[10 .. 1] * 2" * "[10 .. 1] * 4" * "[10 .. 1]" * "10"))
-                -- (#hpf ("[1 .. 10] * 8" * "[5 .. 10] * 2" * "[1 .. 10]" * "100"))
-                . (#lpq 0.2)
-          )
-    --
-    --
-    --
-    p "pads"
-        $ (
-            func
-            .stut' 2 ("<2 1 4>"/16) (
-                (# speed "1 .. -2")
-                .jux rev
-            ) 
-            .struct "0 0 1 1"
-        )
-        $ stack 
-        [
-            struct "[1 1 1] 0 [0 1 1] 1" $ "z:6" # legato 0.99
-        ]
-        -- # cut 1
+    p 1 silence
+    -- p "bass" silence
+    ---p "pads" silence
+    -- p "rand" silence
+    p "drums" silence
+    -- p "kic" silence
+    p "synths" silence
+    p 0 silence
+
+  
+p "pads"
+    $ (
+        func
+        .stut' 2 ("<2 1 4>"/16) (
+            (# speed "1 .. -2")
+            .jux rev
+        ) 
+        .struct "0 0 1 1"
+    )
+    $ stack 
+    [
+        struct "[1 1 1] 0 [0 1 1] 1" $ "z:6" # legato 0.99
+    ]
+    -- # cut 1
+
     p "drums"
         $ (
             func
@@ -130,6 +41,7 @@ do
             struct "0 1 0 1" $ "z:2" # crush 2 # lpf 10000 # lpq 0.2,
             "z:4([3],<12>, 8)" # release 0.9 # shape 0.9  # speed 0.7 # crush "1 .. 4 "
         ]
+
     p "rand" 
         $ (
             void
@@ -143,6 +55,5 @@ do
            filter $ chop "233" $ "z:78" # crush "1 .. <1 8>" # gain 1.08 
         ]
         # legato 0.5
-    trackio
 
     
