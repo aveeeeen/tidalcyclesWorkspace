@@ -1,0 +1,112 @@
+-- myorph live set 
+
+setcps(140/240)
+
+hush
+
+do
+    let trackio = do  
+            -- p "v" silence 
+            -- p "d" silence 
+            -- p "b" silence 
+            -- p "p" silence
+            -- p "dd" silence
+            p "" silence 
+        fx = 
+            void
+            .whenmod 8 8 (
+                void
+                .(# hpf (fast 0.5 $ "50 .. 1" * "50"))
+                .(# hpq 0.2)
+            )
+        func =
+            void
+            .func1
+            -- .func2
+            -- .func3
+    ---
+    ---    
+    p "d" 
+        $ (
+            void
+            .fx
+            .func
+            -- .struct (binary "123")
+        )
+        $ stack [
+            func1 $ fast 2 $ struct (binary 111) $ "hh*2 [hh oh] hh*2 [~ oh]" # l 0.8 -- hihatsssss
+            -- ,big 0.7 1 $ slice 16 "[0 .. 15]/2" $ "vd" # n 2 # cut 1 # gain 0.8 -- maindrums
+            ,big 0.7 1 $ struct "1*8" $ slice 8 (choose [1 , 3, 4, 8]) $ "vd" # n 2 # cut 1 # gain 0.8 -- maindrums
+            ,slice 16 "[0 .. 15]/2"$ "vd" # l 0.5 # gain 0.8 -- breakbeats
+            ,big 0.7 1 $ "bd*4" # cut 5 # gain 0.9
+        ]
+        # orbit 1
+    p "v"
+        $ (
+            void
+            .fx
+            -- .filter 
+            -- .chop 4
+        )
+        $ stack 
+        [
+            slice 16 "[[0 .. 15]]/4" $ "v" # n 1 # l 1 -- sine
+            ,big 0.7 0.8 $ slice 16 "[0 .. 15]/4" $ "v" # n 3 # cut 2 # gain 0.8-- chords
+            --,slice 16 "[0 .. 15]/4" $ "v" # n 0 # cut 2 # gain 0.95-- arp
+        ]
+        # orbit 2
+    p "b"
+        $ (
+            void
+            .fx
+            .func
+            .struct "1*<8,16>"
+            -- .struct "<1>(<0,3>,8)*<1 2>"
+            .filter2
+            .send
+        )
+        $ "sub"
+        # nt "-7"
+        # speed "[1 1 -1 -0.5]"
+        -- # l "0.9 .. 0.4"
+        # l 1
+        # crush "1 .. <4 0.9 4 0.5>"
+        # gain 0.8
+        # orbit 3
+    p "p"
+        $ (
+            void
+            .fx
+            .big 0.5 0.78
+            .slice 4 ("1*16" |*|"[<2 1 1 3>]/4")
+            -- .slice 16 "[[0 .. 15]/4]"
+            -- .slice 8 ("1*16" |*|"[<1 3 5 7>]/4") 
+            .stut' "2" (1/16) (
+                void
+                . struct "1*16"
+                . (# l "0.4")
+            )
+            -- .chop "[1 .. 8]"
+        )
+        $ "v" # n "2" 
+        # l "1"
+        # gain 0.8 
+        -- # cut 5
+        # orbit 4
+    p "dd"
+     $ (
+         void
+         .fx
+         .func
+         .autopan
+         -- .struct "1(3,8)"
+     )
+     $ stack 
+     [
+         "hh*16 "
+         ,"[~ [~ oh] ~ oh]"
+     ]
+     # shape 0.3
+    trackio
+
+hush    

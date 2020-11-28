@@ -1,0 +1,59 @@
+hush
+ 
+-- new project for EP made completely inside tidal
+
+setcps (140/240)
+
+do
+    p 1 silence
+    -- p "bass" silence
+    ---p "pads" silence
+    -- p "rand" silence
+    p "drums" silence
+    -- p "kic" silence
+    p "synths" silence
+    p 0 silence
+
+  
+p "pads"
+    $ (
+        func
+        .stut' 2 ("<2 1 4>"/16) (
+            (# speed "1 .. -2")
+            .jux rev
+        ) 
+        .struct "0 0 1 1"
+    )
+    $ stack 
+    [
+        struct "[1 1 1] 0 [0 1 1] 1" $ "z:6" # legato 0.99
+    ]
+    -- # cut 1
+
+    p "drums"
+        $ (
+            func
+           -- .func3
+        )
+        $ stack 
+        [
+            struct "1*2 {0 1} [~ 0] 1*<2 4>" $ "z:3" # shape 0.4 # gain 0.9 ,
+            struct "0 1 0 1" $ "z:2" # crush 2 # lpf 10000 # lpq 0.2,
+            "z:4([3],<12>, 8)" # release 0.9 # shape 0.9  # speed 0.7 # crush "1 .. 4 "
+        ]
+
+    p "rand" 
+        $ (
+            void
+            .func
+            -- .func2
+            --- .func3
+        )
+        $ stack
+        [
+            struct (binary ("22 *2")) $ "z" # n "6",
+           filter $ chop "233" $ "z:78" # crush "1 .. <1 8>" # gain 1.08 
+        ]
+        # legato 0.5
+
+    

@@ -1,0 +1,123 @@
+-- second attempt of live edit of var
+setcps (160/240)
+
+hush
+
+do 
+    let trackio = do  
+        p "a" silence
+        -- p "var" silence 
+        p "p" silence
+        p "d" silence 
+        -- p "dd" silence
+        p "" silence 
+    let fx = 
+            void
+            .whenmod 8 8 (
+                void
+                .(# hpf (fast 0.5 $ "50 .. 1" * "50"))
+                .(# hpq 0.2)
+            )
+            .send
+        func =
+            void
+            -- .func1
+            -- .func2
+            .func3
+    ---
+    ---
+    p "d"
+        $ (
+            void
+            .fx
+            .func
+            -- .filter "lpf" 10 "[1]*8"
+            -- .chop 2
+        )
+        $ stack
+        [
+            ""
+            -- ,struct (binary "<133 342 564 564>") $ big 0.7 0.9 $ "bd [z cp] [~ sn] [~ bd] " # n (choose [4]) #cut 1 -- # l "0.8 .. 0.7(3,8)"
+            ,"psr*16" # n (irand 8) # hpf 2000 # l "0.8 .. 0.3"
+            ,"hh*16"
+        ]
+        # gain 0.93
+        # orbit 0
+    p "var"
+        $ (
+            void
+            .fx
+            .fast 2
+            -- .send
+            .func
+            .filter "lpf" 200 "[1]*4"
+            .la 4
+            -- .chop 2
+            .struct "{1 1 1 11 1 0 1 1}%4"
+            .slice 8 ("[[1]*8]*<4>" |*| "<2 4 6 7>")
+            -- .slice 16 "[0 .. 7]*2"
+        )
+        $ "var" # n "3" # l 0.9
+        # g 0.9
+        # orbit 2
+    p "dd" -- tokyo drums
+        $ (
+            void
+            -- .filter "hpf" 10 "[1]*4"
+            .fx
+            .func
+            .la 4
+            -- .big 0.5 0.93
+            -- .chop 4
+            -- .(# crush "2  .. 8")
+        )
+        -- $ st (binary 111) 
+        $ slice 16 "[123 34 <235 5> <5 345>]*16" $ "tokyo" # n "3" 
+        # l 0.5
+        # orbit 3
+    p "p"
+        $ (
+            void
+            .fx
+            .big 0.5 0.85
+            .func
+            .la 16
+            -- .filter "lpf" "20" "[1]*16"
+            -- .slice 8 ("[[1]*16]*4" |*| "[<4 3 5 6>]/4")
+            -- .slice 16 "[[0 .. 15]/4]"
+            .slice 8 ("1*16*2" |*|"[<1 3 5 7>]/4") 
+            .stut' "4 .. 1" (3/16) (
+                void
+                . jux rev
+                . struct "1*8"
+                . (# l "0.8")
+            )
+            -- .chop "[1 .. 8]"
+        )
+        $ "v" # n "2" 
+        # l "0.5"
+        # gain 0.8 
+        # cut 5
+        # orbit 4
+    trackio
+
+hush
+     
+     
+     
+    p "v"
+        $ (
+            void
+            .fx
+            -- .filter
+            -- .chop 4
+            .la 4
+        )
+        $ stack 
+        [
+            ""
+            ,slice 16 "[[0 .. 15]*8]/4" $ "v" # n 1 # l 1 -- sine
+            ,big 0.7 0.8 $ slice 16 "[[0 .. 15]*4]/4" $ "v" # n 3 # cut 2 # gain 0.8-- chords
+            ,slice 16 "[[0 .. 15]]" $ "v" # n 0 # cut 2 # gain 0.95-- arp
+        ]
+        # orbit 2
