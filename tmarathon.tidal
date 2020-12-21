@@ -1,0 +1,90 @@
+-- segregated aura 4
+
+setcps (135/240)
+
+hush 
+
+do 
+    let trackio = do  
+        -- p "a" silence 
+        p "r" silence 
+        -- p "b" silence
+        -- p "p" silence
+        p "" silence 
+    let fx = 
+            void
+            .whenmod 8 7 (
+                void
+                .(# hpf (fast 0.5 $ "50 .. 1" * "50"))
+                .(# hpq 0.2)
+            )
+        func =
+            void
+            -- .func1
+            .func2
+            .func3
+            .filter "lpf" 1 "1*4"
+    p "a"
+        $ (
+            void
+            .func
+            .fx
+            .big 0.7 1
+            -- .swng
+            .swng
+        ) 
+        $ stack
+        [
+            ""
+            ,void
+             $ st "1 .1 0. 0 0 0 1. <0 1> 0 <1 0> 1"
+             -- $ st "1*4" 
+             $ "kik:1" #speed 0.7 # release 0.6    
+            ,st "[1]*16" $ "hh" # n "1 . 0 1 . 1 . 1 0"
+            ,"[~ oh ~ oh]*2"
+            ,st "0 1 0 1" $ "clap"
+        ]
+        # l 1
+        # orbit 1
+    p "b"
+        $ (
+            void
+            .func
+            -- .filter "lpf" 30 "1/8"
+            .big 0.5 1
+            -- .swng
+            -- .jux rev
+        )
+        $ stack
+        [
+            la 1 $ slice 16 "[0 .. 15]" $ "slowbreaks"
+        ]
+        -- # lpf 8000
+        # l 1
+        # orbit 5
+    p "p"
+        $ (
+            void
+            .func
+            .fx
+            .big 0.7 1
+            .swng
+            -- .send2
+            .send
+        ) 
+        $ stut' 4 (0.125 * "<1 3 2 4>")(
+            (|* speed ("1 .. 4" * "<1 0.5>" ))
+            .(|* gain ("0.5"))
+        )
+        $ st "{1*4}%4?"
+            $ stack
+        [
+            ""
+            ,randpan $ slice 2 "11 11 11 1" $ "pada" # n 4 # triode 0.4 # distort 0.4
+            ,st "0 1 .1 1 .1 0 . 1 1 " $ "fbd" # nt 1 
+        ]
+        # cut 2
+        # nt "<-3 5 5 4>"
+        # l 1
+        # orbit 3
+    trackio
