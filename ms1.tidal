@@ -1,17 +1,15 @@
--- minor science polygllotal tidalcycles edit for upcoming "truning" liveset
-
+-- minor science polygllotal tidalcycles edit
 setcps (140/240)
 
 hush
 
 do 
     let trackio = do  
-        -- p "var" silence 
-        -- p "p" silence 
+        p "p" silence 
         p "ms" silence 
-        -- p "intro" silence 
+        p "intro" silence 
         p "d" silence 
-        p "td" silence
+        -- p "td" silence
         p "" silence 
     let fx = 
             void
@@ -23,8 +21,8 @@ do
         func =
             void
             -- .func1
-            .func2
-            -- .func3
+            -- .func2
+            .func3
     ---
     ---
     p "intro"
@@ -35,14 +33,14 @@ do
             . jux ((1/8) ~>)
             -- .func3
             .la 4
-            .filter "lpf" "<100 50 20>" "1/8"
+            .filter "lpf" "<20>" "1/8"
             .send
         )
         $ stack
         [
         ""
         ,st "1*<8>" $ slice 8 "[[<3 4 8 0>]/4]" $ "ms" # n 4  
-        ,big 0.6 0.9 $ st "1*16" $ slice 8 "<5 3 2 0 1 4 5 8>" $ randcat ["{1 1 1 0 1 0 0 1}%8"] # s "ms" # n "1" # release (slow 4 $ range 1 0.1 (saw) ) 
+        -- ,big 0.6 0.9 $ st "1*16" $ slice 8 "<5 3 2 0 1 4 5 8>" $ randcat ["{1 1 1 0 1 0 0 1}%8"] # s "ms" # n "1" # release (slow 4 $ range 1 0.1 (saw) ) 
         ]
         # l 1 # orbit 1
     p "ms"
@@ -59,8 +57,8 @@ do
         $ stack
         [
             ""
-            -- ,slice 8 "[[1 2 34 56]*8]/4" $ "ms" # n "2" # gain 1.5 
-            ,st "1*16" $ slice 16 "<2 4 6 8>" $ cat ["{1 1 1 0 1 0 0 1}%8"] # s "ms" # n "0" 
+            ,slice 8 "[[1 2 34 56]*8]/4" $ "ms" # n "2" # gain 1.5 
+            -- ,st "1*16" $ slice 16 "<2 4 6 8>" $ cat ["{1 1 1 0 1 0 0 1}%8"] # s "ms" # n "0" 
         ]
         # l 1
         # gain 1.2
@@ -88,17 +86,17 @@ do
             .fx 
             .func
             -- .func2
-            .big 0.4 1
+            .big 0.3 1
             .send
         )
-        -- $ st "1*32" -- 16 or 32
+        -- $ st "1*16" -- 16 or 32
         $ stack
         [
-            st "[1 1]. 0 . 0 1 . 0 1" 
-            -- st "1 1.1 .1 .1 "
+            -- st "[1 1]. 0 . 0 1 . 0 1" 
+            st "1 1.1 .1 .1 "
             $ "bd hh*4" # n "1"
             , "[~ clap*<2 1>] /<1 4> ~>"
-            -- ,st "1 1?" $ "[~ sn]" # n 2 # dist 0.9
+            ,st "1 1?" $ "[~ sn]" # n 2 # dist 0.9
         ]
         # l 0.9
         # orbit 4
