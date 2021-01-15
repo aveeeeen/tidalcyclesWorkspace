@@ -1,17 +1,18 @@
 -- segregated aura 4
 
-setcps (135/240)
+setcps (120/240)
 
 hush 
 
 do 
     let trackio = do  
-        -- p "d" silence -- main drum
+        p "d" silence -- main drum
         p "td" silence -- tokyo drums
         p "b" silence -- break samples
-        p "a" silence -- bass and chords 
-        -- p "r" silence -- distorted horror sound from aura4
+        -- p "a" silence -- bass and chords 
+        p "r" silence -- distorted horror sound from aura4
         -- p "p" silence -- pads from aura4
+        p "d2" silence -- clap
         p "" silence 
     let fx = 
             void
@@ -23,24 +24,24 @@ do
         func =
             void
             -- .func1
-            -- .func2
+            .func2
             .func3
-            -- .filter "lpf" 20 "1*4"
+            .filter "lpf" 1 "1*4"
     p "d"
         $ (
             void
             .func
             .fx
-            .big 0.3 1
+            .big 0.5 1
             .swng
         ) 
         $ stack
         [
             ""
             ,void
-             -- $ st "1 .1 0. 0 0 0 1. <0 1> 0 <1 0> 1"
+             $ st "1 .1 0. 0 0 0 1. <0 1> 0 <1 0> 1"
              -- $ st "1*4" 
-             $ st "0" 
+             -- $ st "0" 
              $ "kik:1" #speed 0.7 # release 0.6    
             ,st "[1]*16" $ "hh" # n "1 . 0 1 . 1 . 1 0" 
             ,"[~ oh ~ oh]*2" #lpf 9000
@@ -94,15 +95,15 @@ do
             -- .send
         ) 
         $ stut' 4 (0.125 * "<1 3 2 4>")(
-            (|* speed ("1 .. 2" * "<1>" ))
+            (|* speed ("1 .. 4" * "<1  1.5 2 4 8 10>" ))
             .(|* gain ("0.5"))
         )
-        $ st "{1*4}%4?"
+        $ st "{1*2}%8?"
             $ stack
         [
             ""
             ,randpan $ slice 2 "11 11 11 1" $ "pada" # n 4 # dist 0.4
-            -- ,st "0 1 .1 1 .1 0 . 1 1 " $ "fbd" # nt 1 
+            ,st "0 1 .1 1 .1 0 . 1 1 " $ "fbd" # nt 1 
         ]
         # cut 2
         # nt ("<-3 5 5 4>" |+| "-2")

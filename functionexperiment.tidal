@@ -1,0 +1,51 @@
+
+
+do  
+
+    let trackio = do  
+        p "p" silence 
+        p "ms" silence 
+        -- p "intro" silence 
+        -- p "d" silence 
+        p "td" silence
+        p "" silence 
+
+    let fx = 
+            void
+            .whenmod 8 7 (
+                void
+                .(# hpf (fast 0.5 $ "50 .. 1" * "50"))
+                .(# hpq 0.2)
+            )
+        func =
+            void
+            -- .func1
+            .func2
+            .func3
+
+    p "d" 
+        -- $func
+        $plyWith "4" 
+            (
+                (|* gain 0.8) 
+                .(|* speed ( "4 .. 1" * "1"))
+            ) 
+        $filter "lpf" 30 "0.5*4" 
+        $fx
+        $big 0.3 1
+        $stack 
+        [
+            "bd*4",
+            -- "hh*16",
+            -- "[~ clap ~ clap]",
+            st "1" $ randslice 64 $ striate 64 $ "tokyo" # n 2 # l 0.8
+        ] # l 0.7
+
+hush
+
+d1 
+    (
+        rev
+        .plyWith 8 (|* gain 0.8)
+    )
+    $ "bd*2"

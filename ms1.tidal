@@ -1,15 +1,15 @@
 -- minor science polygllotal tidalcycles edit
-setcps (140/240)
+setcps (10/240)
 
 hush
 
-do 
+do  
     let trackio = do  
         p "p" silence 
         p "ms" silence 
-        p "intro" silence 
-        p "d" silence 
-        -- p "td" silence
+        -- p "intro" silence 
+        -- p "d" silence 
+        p "td" silence
         p "" silence 
     let fx = 
             void
