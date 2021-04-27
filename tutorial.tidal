@@ -2,18 +2,10 @@ setcps(180/240)
 
 hush
 
-do 
-    let func = 
-            void
-            .func1
-            -- .func2
-            .func3
-    p "a"
-        $ func 
-        $ stack
-        [
-            "bd [bd bd] bd bd",
-            "~ cp ~ cp",
-            "hh*8",
-            "[~ oh]*4?"
-        ] 
+d1  
+    $ stutWith 2 (6/16) (
+        jux (fast "2 ~>" . rev) 
+        . (|* gain ( "0.1" * "9 .. 6"))
+    )
+    $ func3
+    $ sound "bd cp:3 [~ bd] cp:3"

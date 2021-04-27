@@ -1,0 +1,88 @@
+--monoliph set next segregated aura 3
+
+setcps (160/240)
+
+hush
+
+do 
+    let trackio = do  
+        p "a" silence 
+        p "var" silence 
+        p "p" silence
+        -- p "d" silence 
+        p "td" silence
+        p "ms" silence
+        p "intro" silence
+        p "" silence 
+    let fx = 
+            void
+            .whenmod 8 7 (
+                void
+                    .(# hpf (fast 0.5 $ "50 .. 1" * "50"))
+                .(# hpq 0.2)
+            )
+            .send
+        func =
+            void
+            .func1
+            .func2
+            -- .filter "lpf" 20 "1/4"
+            -- .func3
+    ---
+    ---
+    p "a" -- 4 samples 0 1 are beat centric ,2 pads, 3 bass and pads
+        $ (
+            void
+            .func
+            .fx
+            .la 8
+            -- .filter "hpf" "10" "[1]*4"
+            -- .randslice 16
+            .big 0.6 1
+        )
+        $ stack
+        [
+            "~"
+            ,randslice 16 $ fast 4 $ randcat ["1*4"] # s "a" # n "3"
+            -- ,slice 16 "[4 . 2 23 . 14 . 6 ]*4" $ s "a" # n "1"
+            -- ,slice 16 "[4 . 2 23 . 14 . 6 ]*4" $ randcat ["[1*16] *<2>"] # s "a" # n "0"
+        ]
+        # l 1
+        # orbit 1
+    p "d"  
+        $ (
+            void
+            .fx
+            .func
+            .big 0.6 1
+            -- .(# crush "2  .. 8")
+        )
+        $ stack [
+            ""
+            ,st "0 . 0 1 . 0 . 1" $ "clap" --- # c 1 # release 0.8
+            -- ,slice 16 "1 4 5 3 412 2 13 5" $  st "{1*8}%2?" $ "ms" # n 4 # l 0.9
+            ,st "1 0 0 1 " $ "kik" # n 4
+            -- ,"hh*16?,[~ oh]*4"
+        ]
+        # orbit 2
+    p "td" -- tokyo drums
+        $ (
+            void
+            .fx
+            .func
+            .filter "hpf" "20" "1/4"
+            .big 0.5 0.93
+            -- .tame
+            -- .chop 4
+            .(# crush "2  .. 8")
+        )
+        -- $ st "1*32"
+        $ st "{1 0 1 1 0 1 1 1}%8" 
+        $ slice 16 "[1 . 34 234 . <33 [523 64]> . 5 <4 [ 23 43]>]*4" 
+        $ la 4
+        $ "tokyo" # n "9" 
+        # l 1
+        # orbit 3
+    trackio
+
+hush
