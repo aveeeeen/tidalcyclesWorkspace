@@ -2,12 +2,7 @@ setcps(180/240)
 
 hush
 
-do 
-    let func = 
-            void
-            .func1
-            -- .func2
-            .func3
+
     p "a"
         $ func 
         $ stack
