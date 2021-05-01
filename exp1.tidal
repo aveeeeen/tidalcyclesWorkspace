@@ -54,10 +54,10 @@ do
             .someCyclesBy 2 (
                 void
                 . (#legato "1")
-                -- . (# pan (autos 0 1))
+                . (# pan (autos 0 1))
                 . (#speed "1 -1 1 0.5 1 0.5 0.5 1 -0.5")
                 -- . stut' 1 (6/32/4) (
-                . stut' 4 (4/32) (
+                . stut' 4 (12/32) (
                     void
                     -- . (#legato 0.3)
                     . iter "2"
@@ -121,6 +121,8 @@ do
         # gain 0.7
         # orbit 1
         # crush 3
+
+
     p 2
         $ (
             func2

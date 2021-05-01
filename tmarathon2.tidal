@@ -1,0 +1,134 @@
+-- segregated aura 4
+
+setcps (120/240)
+
+hush 
+
+do 
+    let trackio = do  
+        p "d" silence -- main drum
+        p "td" silence -- tokyo drums
+        p "b" silence -- break samples
+        -- p "a" silence -- bass and chords 
+        p "r" silence -- distorted horror sound from aura4
+        p "p" silence -- pads from aura4
+        p "d2" silence -- clap
+        p "" silence 
+    let fx = 
+            void
+            .whenmod 8 7 (
+                void
+                .(# hpf (fast 0.5 $ "50 .. 1" * "50"))
+                .(# hpq 0.2)
+            )
+        func =
+            void
+            -- .func1
+            .func2
+            .func3
+            .filter "lpf" 10 "1/2"
+    p "d"
+        $ (
+            void
+            .fx 
+            .func
+            -- .func2
+            .big 0.4 1
+            .send
+        )
+        -- $ st "1*16" -- 16 or 32
+        $ stack
+        [
+            st "[1 1]. 0 . 0 1 . 0 1" 
+            -- st "1 1.1 .1 .1 "
+            $ "bd hh*4" # n "1"
+            , "[~ clap*<2 1>] /<1 4> ~>"
+            ,st "1 1?" $ "[~ sn]" # n 2 # dist 0.9
+        ]
+        # l 0.9
+        # orbit 4
+    p "td" -- tokyo drums
+        $ (
+            void
+            -- .filter "hpf" 10 "[1]*4"
+            .fx
+            .swng
+            .func
+            .big 0.4 1
+            -- .chop 4
+            .la 4
+            .(# crush "2  .. 8")
+        )
+        $ slice 16 "[123 34 <235 5> <5 32> 234 43 64 64]*8" 
+        -- $ randslice 16
+        $ st "1*8"
+        $ "tokyo" # n "4" 
+        # l 0.5
+        # orbit 3
+    p "b"
+        $ (
+            void
+            .fx
+            .func
+            -- .filter "lpf" 30 "1/8"
+            .big 0.3 1
+            .swng
+            -- .jux rev
+        )
+        $ stack
+        [
+            la 1 $ slice 16 "[0 .. 15]" $ "slowbreaks"
+        ]
+        -- # lpf 8000
+        # l ("10 .. 4" |*| "0.1") 
+        # orbit 5
+    p "a"
+        $ (
+            void
+            .func
+                .fx
+            .big 0.3 1
+            -- .swng
+            .send2
+            -- .send
+        ) 
+        $ stut' 2 (0.05 * "<1 3 2 4>")(
+            -- (|* speed ("1 .. 2" * "<8>" ))
+            (|* gain ("0.5"))
+            .(|* l 0.5)
+        )
+        $ st "{1*4}%2? ~> ~>"
+        $ "supersaw"
+        # voice ("3" * "0.1") 
+        # decay 0.2
+        # release 0.8
+        -- # cut 2
+        # nt ("<-3 2 4 2>" |+| "[0,7,<14 3>,<3 19>, 10, 22, 26]" |+| "-12") -- # lpf 10000
+        # l 1
+        # orbit 3
+    trackio
+
+    p "p"
+        $ (
+            void
+            .fx
+            .big 0.5 1
+            .func
+            -- .filter "lpf" "40" "1/4"
+            -- .slice 8 ("[[1]*16]*4" |*| "[<4 3 5 6>]/4")
+            -- .slice 16 "[[0 .. 15]]"
+            .slice 4 "<1 2 3 4>"
+            .la 16
+            -- .slice 8 ("1*16*2" |*|"[<1 3 5 7>]/4") 
+            .stut' "4" (3/16) (
+                void
+                . jux rev
+                . struct "1*16"
+                . (# l "0.8")
+            )
+        )
+        $ "v" # n "2" 
+        # l "0.8"
+        # gain 1 
+        # cut 5
+        # orbit 4
