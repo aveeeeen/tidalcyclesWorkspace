@@ -1,6 +1,6 @@
 --monoliph set next segregated aura 3
 
-setcps (140/240)
+setcps (150/240)
 
 hush
 
@@ -9,7 +9,7 @@ do
         -- p "a" silence 
         p "var" silence 
         p "p" silence
-        p "d" silence 
+        -- p "d" silence 
         -- p "td" silence
         p "ms" silence
         p "intro" silence
@@ -22,11 +22,13 @@ do
                 .(# hpq 0.2)
             )
             .send
+            .(# l " 0.8" )
         func =
             void
             -- .func1
             .func2
             .func3
+            .
     ---
     ---
     p "a" -- 4 samples 0 1 are beat centric ,2 pads, 3 bass and pads
@@ -35,8 +37,8 @@ do
             .func
             .fx
             .la 8
-            -- .filter "hpf" "10" "[1]*4"
-            -- .randslice 16
+            -- .filter "hpf" "40" "[1]*4"
+            .randslice 16
             .big 0.6 1
         )
         $ stack
@@ -53,7 +55,7 @@ do
             void
             .fx
             .func
-            .big 0.6 0.93
+            .big 0.7 1.1
             .(# crush "2  .. 8")
         )
         $ stack [
@@ -68,19 +70,23 @@ do
         $ (
             void
             .fx
-            -- .func
+            .func
             .la 4
-            .filter "hpf" "20" "1/4"
-            .big 0.5 0.93
+            -- .filter "hpf" "10" "1/8"
+            .big 0.6 0.93
             -- .tame
-            -- .chop 4
+            .chop 2
             .(# crush "2  .. 8")
         )
         -- $ st "1*32"
-        $ st "{1 0 1 1 0 1 1 0 }%8" 
+        -- $ st "{1 0 1 1 0 1 1 0 }" 
         $ slice 16 "[1 . 34 234 . <33 [523 64]> . 5 <4 [ 23 43]>]*4" $ "tokyo" # n "9" 
-        # l 1
+        # l 0.8
         # orbit 3
     trackio
 
 hush
+
+
+[x | x <- [2,5,6,4,8,7], x `mod` 4 == 0 , x >= 0]
+

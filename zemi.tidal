@@ -1,0 +1,84 @@
+setcps(120/240)
+
+    hush
+
+do 
+    let trackio = do  
+        -- d1 silence
+        d3 silence 
+        d4 silence 
+        p "" silence 
+    let fx = 
+            void
+            .whenmod 8 0 (
+                void
+                .(# hpf (fast 0.5 $ "50 .. 1" * "50"))
+                .(# hpq 0.2)
+            )
+            .whenmod 4 0 (
+                void
+                .filter "hpf" 20 (6/16)
+            )
+            .whenmod 4 4 (
+                void
+                -- . density "2 -2 [2 1] 0 "
+                . whenmod 4 1 (
+                     chop 2
+                     .autopan
+                )
+                .stut' 2 (4/32) (
+                    degradeBy 0.02
+                    .(|* speed "1 .. 2 .. -1")
+                )
+            )            
+            . (# legato 1)
+            -- . swng
+        func =
+            void
+            -- .func1
+            .func2
+            .func3
+    ---
+    ---
+    d1
+        $(
+            void
+            .big 0.2 1
+            .fx
+            .func
+            .send2
+        )
+        $ (
+            void
+            .density "<1>"-- (slow 4 $ range 22 1 saw)
+            .slice 32 "32"-- "<2 [5] 7 9>"
+            .la 32
+            .st "1*16"
+        ) 
+        $ "zemi" # n 1 # l 1 #speed "<1>" 
+        # hpf 100
+    d4
+        $ (
+            -- big 0. 1
+            void
+            .func2
+            .send2 
+            .fx
+        )
+        $ stack [
+            la 2 $ ply "<2 4>" $ "[~ sn:1]" # gain 0.7 
+            -- ,"kik*2 ~ [~ kik] ~ " # n 4
+            ,"hh*8?"
+            ,"~ [~ [~ clap]]"
+        ] 
+        # l 0.8
+    d3
+        $ (
+            void
+            -- .func
+            .fx
+        )
+        $stack [
+            "[kik] [~] [~ [kik]] [~]" #n 4
+        ]
+    trackio

@@ -1,11 +1,133 @@
-setcps(180/240)
+setcps (130/240)
 
 hush
 
-d1  
-    $ stutWith 2 (6/16) (
-        jux (fast "2 ~>" . rev) 
-        . (|* gain ( "0.1" * "9 .. 6"))
-    )
-    $ func3
-    $ sound "bd cp:3 [~ bd] cp:3"
+
+do 
+    let trackio = do  
+        d1 silence 
+        -- d2 silence 
+        d3 silence 
+        d4 silence
+        p "var" silence 
+        p "p" silence
+        -- p "td" silence
+        p "ms" silence
+        p "intro" silence
+        p "" silence 
+    let fx = 
+            void
+            .whenmod 8 7 (
+                void
+                .(# hpf (fast 0.5 $ "50 .. 1" * "50"))
+                .(# hpq 0.2)
+            )
+            .whenmod 4 2 (
+                void
+                .filter "lpf" 30 (6/16)
+            )
+            .whenmod 4 0 (
+                void
+                . density "2 -2 [2 1] 0 "
+                . whenmod 4 1 (
+                     chop 2
+                     .autopan
+                )
+                .stut' 2 (4/32) (
+                    degradeBy 0.02
+                    .(|* speed "1 .. 2 .. -1")
+                )
+            )            
+            . (# legato 1)
+            -- . swng
+        func =
+            void
+            -- .func1
+            .func2
+            -- .func3
+    ---
+    ---
+    d4
+        $ (
+            big 0.3 1
+            -- .func1 
+            -- .fx
+        )
+        $ stack [
+            ply "<2 8>" $ "[~ sn:1]"
+            ,"kik*2 ~ [~ kik] ~ " # n 4
+        ] 
+        # l 0.8
+    d1
+        $ (
+            big 0.4 1
+            -- .filter "lpf" 40 "1/8"
+            .func1
+            .fx
+        )
+        $ stutWith 0 (2/16) (
+             jux (|* gain (sine*2+saw)) 
+            . (# speed "2 -1 1 1")
+            . (# legato 0.8)
+            . (# release 0.3)
+        ) 
+        $ stack [
+            s "[~ oh]*1 " # r 0.9 
+            , s "[~ cp][~ cp]" # r 0.9 # crush 4 # n 1
+            -- , "kik*4" # n 2
+        ] 
+        -- # speed "1 -1 -1 1/2" # gain (sine) 
+        # legato 0.8
+    d2 
+        $ (
+            void
+            .func
+            -- .filter "lpf" 40 (2/8)
+            .fx
+            .send
+        )
+        $ st "1"  
+        -- $ st "1 [1 1] [0 1] 1"
+        $ la 8
+        $ stack [
+            ""
+            ,slice 8 "<2>" $ "human" -- # cut 1 
+            ,slice 8 "<0 6>" $ "human*16" # release 0.5
+        ]  
+        -- # crush "[4 .. 8]*4" 
+        # gain 1.35 
+        -- # speed "1" 
+        # speed "1 -1 -1 1/2"
+        -- # release 0.4 
+        -- # legato "[0.8]*16" 
+    d3
+        $ (
+            void
+            -- .func
+            .filter "lpf" 80 (3/8)
+            .fx
+        )
+        $ st "1 [0 1] [0 1 ] [1] "
+        $ "sub"
+        # n 2
+        # nt "<-3 -3>" |+| nt "-4"
+        # l 1
+        -- # triode ("0.9")
+        # shape 0.4
+        |* gain (saw*2)
+        # speed "1 1 [0 2] 1"
+        # release 0.95    
+    trackio
+
+d2 silence 
+
+
+-- d1 (sound "bd")
+
+
+:quit
+
+
+:t range
+
+
