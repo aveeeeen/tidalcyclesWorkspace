@@ -1,0 +1,82 @@
+setcps(140/240)
+
+hush
+
+do
+    let trackio = do
+        p "xylo" silence
+        -- p "d" silence
+        p "pad" silence
+        p "" silence
+    let fx = 
+            whenmod 8 7 (
+                filter "hpf" 10 "1/4"
+            )
+            .filter "lpf" 100 "2"
+        func =
+            void
+            -- .func1
+            .func2
+            .func3
+    p "d"
+        $ (
+            void
+            .fx
+            .func
+            -- .("<0.25 0.75 2/16>" ~>)
+            .stut' 5 ("2 6 <3> <4>"/32) (
+                (|/ speed ("1 -1/2" * "<4 .. 1>"))
+                .(|* gain 0.9)
+            )
+        )
+        $ stack [
+            "bd . bd . [~ bd] . bd"
+            ,st "[<[1 0 1 1] [1 0 0 1]>]*4" $ "hh" # n (irand 8)
+            ,"~ sn ~ cp"
+        ]
+        # l "0.6*8"
+        # orbit 1
+    p "xylo"
+        $ (
+            void
+            .fx
+            .big 0.7 1
+            .send2
+            -- .send
+            .func2
+            .func1
+            .stut 2 0.4 0.18
+            .(
+               ("0.5" ~>) . (# nt "<g a c g>")
+            )
+            .whenmod 8 7 (-- "<8 4>" "<4 7 1 4>" (
+                chop "<1 0 2>"
+            )
+            -- .func3
+            .st "1*2 [1 [0 1] [0 1] 1*2]"
+            .slice 4 "[1]*16"
+        )
+        $ "xylo*16"
+        |+| nt (arp "down up" "<0 -5> <c> [[~ 2] [-8 9] 4 5] <'add9 'sus4>") |+ nt "-12" -- |+ nt "4,11 -5 [7 ] 0"
+        # n 2 # l 0.8 -- # cut 1
+        # speed ("<1 1.5 -0.5 -1>/4")
+        # orbit 2
+        -- # gain "[[1][0]]*4"
+    p "pad"
+        $ (
+            void
+            .fx
+            .func
+            .send2
+            -- .jux ((#speed (sine*4)))
+            -- .stut 4 0.9 0.05
+        )
+        -- $ st "1 [~ [~ 1]]" 
+        $ slice 4 "2*16"
+        $ "pada" 
+        # nt "<c>" |+| nt "5" # l 0.9 
+        # speed (saw*1/4+sine*2) 
+        -- # dist 0.3 -- * "9 .. 3"
+        # orbit 3
+    trackio
+
