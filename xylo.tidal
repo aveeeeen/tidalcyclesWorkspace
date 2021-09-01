@@ -4,7 +4,7 @@ hush
 
 do
     let trackio = do
-        p "xylo" silence
+        -- p "xylo" silence
         -- p "d" silence
         p "pad" silence
         p "" silence
@@ -30,7 +30,8 @@ do
             )
         )
         $ stack [
-            "bd . bd . [~ bd] . bd"
+            ""
+            --,"bd . bd . [~ bd] . bd"
             ,st "[<[1 0 1 1] [1 0 0 1]>]*4" $ "hh" # n (irand 8)
             ,"~ sn ~ cp"
         ]
@@ -44,7 +45,7 @@ do
             .send2
             -- .send
             .func2
-            .func1
+            -- .func1
             .stut 2 0.4 0.18
             .(
                ("0.5" ~>) . (# nt "<g a c g>")
@@ -57,7 +58,8 @@ do
             .slice 4 "[1]*16"
         )
         $ "xylo*16"
-        |+| nt (arp "down up" "<0 -5> <c> [[~ 2] [-8 9] 4 5] <'add9 'sus4>") |+ nt "-12" -- |+ nt "4,11 -5 [7 ] 0"
+        |+| nt (arp "down up" "<0 -5> <c> [[~ 2] [-8 9] 4 5] <'add9 'sus4>") 
+        |+ nt "-12" -- |+ nt "4,11 -5 [7 ] 0"
         # n 2 # l 0.8 -- # cut 1
         # speed ("<1 1.5 -0.5 -1>/4")
         # orbit 2
@@ -72,9 +74,9 @@ do
             -- .stut 4 0.9 0.05
         )
         -- $ st "1 [~ [~ 1]]" 
-        $ slice 4 "2*16"
+        $ slice 4 "3*16"
         $ "pada" 
-        # nt "<c>" |+| nt "5" # l 0.9 
+        # nt "<c>" |+| nt "7" # l 0.9 
         # speed (saw*1/4+sine*2) 
         -- # dist 0.3 -- * "9 .. 3"
         # orbit 3

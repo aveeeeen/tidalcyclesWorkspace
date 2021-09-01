@@ -28,7 +28,6 @@ do
             -- .func1
             .func2
             .func3
-            .
     ---
     ---
     p "a" -- 4 samples 0 1 are beat centric ,2 pads, 3 bass and pads

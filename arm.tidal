@@ -6,15 +6,15 @@ hush
 
 do 
     let trackio = do  
-        -- p "d" silence -- main drums
+        p "d1" silence -- main drums
         -- p "d2" silence -- clap
-        -- p "b" silence -- break sample
+        p "b" silence -- break sample
         -- p "ar" silence -- arimurasann sample
-        -- p "bass" silence -- bass pads
+        p "bass" silence -- bass pads
         p "" silence 
     let fx = 
             void
-            .whenmod 8 0 (
+            .whenmod 8 7 (
                 void
                 .(# hpf (fast 0.5 $ "50 .. 1" * "100"))
                 .(# hpq 0.2)
@@ -24,8 +24,8 @@ do
             -- .func1
             .func2
             -- .func3
-            .filter "lpf" 30 "1*4"
-    p "d"
+            -- .filter "lpf" 30 "1*4"
+    p "d1"
         $ (
             void
             .func
@@ -76,7 +76,7 @@ do
             , void
             $ big 0.7 1
             -- $ slow 2
-            $ st "<{1*4}%4>" 
+            $ st "<{1*1}%4>" 
             $ slice 16 "0 .. 15" 
             $ la 8 
             -- $ randslice 16
@@ -108,7 +108,7 @@ do
         $ (
             void
             .fx
-            .someCyclesBy 4 (send2)
+            -- .someCyclesBy 4 (send2)
             -- .func
             .big 0.9 1
         )
@@ -117,10 +117,10 @@ do
         # voice 0
         # decay ("8 .. 1" |*| "0.1")
         # pitch1 0.5
-        # nt (slow 1 ("<10 9 2 2>" |+| "-24" ))
+        # nt (slow 1 ("<10 9 2 2>" |+| "-24" |+| "0.26" ))
         -- # lpf ("10 .. 1" * "10 .. 1" * "100" )
         # l 1
-    unmute "bass"
+    -- unmute "bass"
     trackio
 
     p "p"

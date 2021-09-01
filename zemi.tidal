@@ -4,34 +4,35 @@ setcps(120/240)
 
 do 
     let trackio = do  
-        -- d1 silence
-        d3 silence 
-        d4 silence 
+        -- p "pad" silence
+        -- p "d1" silence -- sub
+        p "d2" silence -- main drumset
         p "" silence 
     let fx = 
             void
-            .whenmod 8 0 (
+            .whenmod 8 7(
                 void
                 .(# hpf (fast 0.5 $ "50 .. 1" * "50"))
                 .(# hpq 0.2)
             )
-            .whenmod 4 0 (
-                void
-                .filter "hpf" 20 (6/16)
-            )
             .whenmod 4 4 (
                 void
-                -- . density "2 -2 [2 1] 0 "
-                . whenmod 4 1 (
-                     chop 2
-                     .autopan
+                .filter "hpf" 80 (6/16)
+            )
+            -- .density (slow 4 $ range 20 1 sine)
+            .whenmod 4 4 (
+                void
+                .chop 1
+                -- . density "2 -2 [2 1] -1 "
+                . whenmod 4 4 (
+                     autopan
                 )
-                .stut' 2 (4/32) (
+                .stut' 2 (6/32) (
                     degradeBy 0.02
                     .(|* speed "1 .. 2 .. -1")
                 )
             )            
-            . (# legato 1)
+            -- . (# legato 1)
             -- . swng
         func =
             void
@@ -40,7 +41,7 @@ do
             .func3
     ---
     ---
-    d1
+    p "pad"
         $(
             void
             .big 0.2 1
@@ -50,35 +51,51 @@ do
         )
         $ (
             void
-            .density "<1>"-- (slow 4 $ range 22 1 saw)
-            .slice 32 "32"-- "<2 [5] 7 9>"
+            -- .density "1 [2] [4] [1]"-- (slow 4 $ range 22 1 saw)
+            .st -- "1"
+             "1"
+            .slice 32
+                -- "<23>"
+                "<23 25 5 31>" 
+                --"[0 .. 24]/8"
+                -- "<2 [5 12] 7 9>" -- 7 9 
             .la 32
-            .st "1*16"
         ) 
-        $ "zemi" # n 1 # l 1 #speed "<1>" 
+        $ "zemi" # n 1 # l 1 -- # speed (choose [1,-1]) 
         # hpf 100
-    d4
+        # orbit 1
+    p "d1"
         $ (
-            -- big 0. 1
             void
-            .func2
+            .big 0 0.8
+            .func
             .send2 
             .fx
         )
         $ stack [
-            la 2 $ ply "<2 4>" $ "[~ sn:1]" # gain 0.7 
-            -- ,"kik*2 ~ [~ kik] ~ " # n 4
-            ,"hh*8?"
-            ,"~ [~ [~ clap]]"
+            ""
+            -- ,la 2 $ ply "<2 4>" $ "[~ :1]" # gain 0.7 
+            ,density 
+                --"1 [4] [1] 2" 
+                "1"
+            $ slice 16 "3 5 14 2 23 45 12 1 2" $ la 8 $ "tokyo" # n 0 
         ] 
+        # gain 0.4
         # l 0.8
-    d3
+        # orbit 2
+        # hpf 300
+    p "d2"
         $ (
             void
-            -- .func
+            .func
             .fx
         )
         $stack [
-            "[kik] [~] [~ [kik]] [~]" #n 4
+            ""
+            ,"kik [~ kik] " #n 1
+            -- ,"~ cp ~ [cp]" #n 1
+            ,"hh*16"
+            ,density "2 [3 4] [8]" $ degradeBy 0.5 $ "[~ oh]"
         ]
+        # orbit 3
     trackio
