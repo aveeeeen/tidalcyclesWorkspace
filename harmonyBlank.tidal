@@ -1,0 +1,58 @@
+do 
+    let trackio = do  
+        p "brk" silence 
+        p "pad" silence -- previous
+        -- p "d1" silence -- second
+        -- p "d2" silence -- first
+        p "cl" silence
+        p "" silence 
+    let hpfnum = 7 -- max 8
+        lpfnum = 3 -- max 4
+        fx'num1 = 3 -- max 4
+        fn'num2 = 3 -- max 4
+    let fx = 
+            void
+            .whenmod 8 hpfnum (
+                void
+                .(# hpf (fast 0.5 $ "50 .. 1" * "100"))
+                .(# hpq 0.1)
+            )
+            .whenmod 4 lpfnum (
+                void
+                .filter "lpf" 80 (2/16)
+            )
+        fx' =
+            void
+            .whenmod 4 fx'num1 (
+                void
+                -- . density "<1 1 1 2> "
+                . whenmod 4 0 (
+                     chop 2
+                     .autopan
+                )
+            )   
+            .whenmod 4 fx'num2 (
+                void
+                .stut' 4 ("<1 2>"/32) (
+                    degradeBy 0.02
+                    .(|* speed "1 .. 2 .. -1")
+                )
+            )         
+            . (# legato 1)
+            -- . swng
+        func =
+            void
+            -- .func1
+            .func2
+            .func3
+    ---
+    ---
+    let sub = 
+            void 
+            .send2 
+            . fx'
+    p "d1"
+        $ (
+            void
+        )
+        ""

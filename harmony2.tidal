@@ -1,0 +1,85 @@
+hush
+
+do 
+    let trackio = do  
+        p "brk" silence 
+        p "pad" silence -- previous
+        p "d1" silence -- second
+        p "d2" silence -- first
+        -- p "d3" silence -- first
+        p "cl" silence
+        p "" silence 
+    let fx = 
+            void
+            .whenmod 8 7 (
+                void
+                .(# hpf (fast 0.5 $ "50 .. 1" * "100"))
+                .(# hpq 0.1)
+            )
+            .whenmod 8 8(
+                void
+                .filter "hpf" 20 (4/16)
+            )
+        fx' =
+            void
+            .whenmod 4 0 (
+                void
+                -- . density "<1 1 1 2> "
+                . whenmod 4 0 (
+                     chop 2
+                     .autopan
+                )
+            )   
+            .whenmod 4 1 (
+                void
+                .stut' 4 ("<1 2>"/32) (
+                    degradeBy 0.02
+                    .(|* speed "1 .. 2 .. -1")
+                )
+            )         
+            . (# legato 1)
+            -- . swng
+        fx'' = chop "2 2 4 1"
+               .(#speed "[1 1 1 -1]") 
+        func =
+            void
+            -- .func1
+            .func2
+            .func3
+    ---
+    ---
+    let sub = 
+            void 
+            -- .send2 
+            -- . fx'
+    setcps(140/240)
+    p "d3"
+        $ (
+            big 0.3 1
+            -- .func1 
+            .fx
+        )
+        $ stack [
+            ""
+            -- ,sub $ density "4 [8 2]" $ "[~ sn:2]" # l 1
+            -- ,"bd(3,8)%4" # n 5 # g 1.4 # l 1
+            -- ,"grime" #n "<4 >" # l 1 #nt "7"
+            -- , func2 $ st "1*4" $ density " 1 2 2 81" $ "jj2" # n "<23>"  # l 0.8 # speed ("1 2 -1/2 2" * "1 .. 4")
+            ,func $ la "<1 1 1 2>" $ struct "<[1 1] 1*4 1*8>" $ density "1 2 2 1" $ "cl2" # n "<23>"  # l 0.8
+        ] 
+        # orbit 1
+    p "d2"
+        $ (
+            big 0.5 1
+            -- .filter "lpf" 40 "1/8"
+            .fx
+        )
+        $ stack [
+            ""
+            ,la 2  $ slice 8 "{0 1 2 [4*1] 5 .. 8}%16" $ "jj1" # n 51  #hpf 100 #release 0.5
+            ,sub $ la 2 $ randslice 16 $ "jj1*16" # n 25
+        ] 
+        # gain (sine) 
+        # l 0.8
+        # orbit 2
+    trackio

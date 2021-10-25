@@ -1,13 +1,12 @@
-setcps(120/240)
+setcps(140/240)
 
     hush
 
 do 
     let trackio = do  
         -- p "pad" silence
-        p "d1" silence -- sub
-        -- p "d2" silence -- main drumset
-        -- p "d3" silence -- sub
+        p "d2" silence -- main drumset
+        p "d3" silence -- sub
         p "" silence 
     let r1 = density "2 [4 6] 1 1 " . (#gain "<1 1 0 1>")
         r2 = density "1 2 2 8" .(#gain"<1 [1 0 1 1] 0 [1 0]>")
@@ -25,7 +24,7 @@ do
             -- .density (slow 4 $ range 20 1 sine)
         fx' =
             void
-            .whenmod 4 0 (
+            .whenmod 4 3 (
                 void
                 -- . density "<1 1 1 2> "
                 . whenmod 4 0 (
@@ -56,43 +55,39 @@ do
     p "pad"
         $(
             void
-            .r2
+            -- .r2
             .big 0.2 1
             .fx
-            .sub
+            -- .sub
             .func
         )
         $ (
             void
             -- .density "1 [2] [4] [1]"-- (slow 4 $ range 22 1 saw)
-            .st -- "1"
-             "1"
+            .st "1*8"
             .slice 32
                 -- "<23>"
                 "<23 25 5 31>" 
                 --"[0 .. 24]/8"
                 -- "<2 [5 12] 7 9>" -- 7 9 
-            .la 32
+            .la 16
         ) 
-        $ "zemi" # n 1 # l 1 -- # speed (choose [1,-1]) 
+        $ "zemi" # n 1 # l 1 # speed (choose [1,-1]) 
         # hpf 100
         # orbit 1
     p "d3"
         $ (
             void
-            .big 0 0.8
-            .func
+            .big 0.4 1
+            -- .func
             .send2 
             .fx
-            .r1
+            -- .r1
         )
         $ stack [
             ""
             -- ,la 2 $ ply "<2 4>" $ "[~ :1]" # gain 0.7 
-            ,density 
-                --"1 [4] [1] 2" 
-                "1"
-            $ sub $ slice 16 "3 5 14 2 23 45 12 1 2" $ la 8 $ "tokyo" # n 0 
+            ,randslice 16 $ la 2 $ "tokyo" # n 4
         ] 
         # gain 0.4
         # l 0.8
@@ -103,11 +98,12 @@ do
             void
             .func
             .fx
+            .density "2 4 4 2"
         )
         $stack [
             ""
             ,"kik [~ kik] " #n 1
-            -- ,"~ cp ~ [cp]" #n 1
+            ,"~ cp ~ [cp]" #n 1
             ,"hh*16"
             ,density "2 [3 4] [8]" $ degradeBy 0.5 $ "[~ oh]"
         ]
