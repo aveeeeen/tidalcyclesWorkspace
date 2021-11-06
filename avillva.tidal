@@ -5,11 +5,11 @@ hush
 
 do 
     let trackio = do  
-        -- p "brk" silence 
+        p "brk" silence 
         p "pad" silence -- previous
         p "d3" silence -- previous
         -- p "d1" silence -- second
-        p "d2" silence -- first
+        -- p "d2" silence -- first
         p "cl" silence
         p "" silence 
     let fx = 
@@ -21,7 +21,7 @@ do
             )
             .whenmod 4 4 (
                 void
-                .filter "hpf" 80 (2/16)
+                .filter "hpf" 50 (2/16)
             )
         fx' =
             void
@@ -33,7 +33,7 @@ do
                      -- .autopan
                 )
             )   
-            .whenmod 4 0 (
+            .whenmod 4 4 (
                 void
                 .stut' 2 ("<1 2>"/32) (
                     degradeBy 0.02
@@ -53,37 +53,36 @@ do
             void 
             .send2 
             . fx'
+    setcps (140/240)
     p "d1"
         $ (
-            big 0.2 1
             -- .func1 
-            .fx
+            fx
+            .sub
         )
         $ stack [
             ""
-            -- ,sub $ density "4 [8 2]" $ "[~ sn:2]" # l 1
-            ,"bd" # n 1 # g 1.4 # dist 0.3 # l 0.5
-            -- s,"grime" #n "<4 9>" # l 1 # speed "1 1 2 1"
-            ,sub $ func 
-            $ chop "2 2 4 1" 
-            $ "jj2" # n "<5>" # l 0.8
-            -- ,func $ sub $ density "1 2 2 1" $ st "1*16"  $ "psr" # n "<23>"  # l 0.8 # speed "1 2 1 4"
+            ,sub $ func $ st "0 0. 1 0 . 1 0 . 0 1 " $ chop "2 2 4 1" $ "cl3" # n "<9>" # l 0.8
+            ,func $ fx' $ st "1*16"  $ "hh" # n "<23>"  # l 0.8 # speed "1 2 1 4"
+            ,big 0.3 1 $ density 2 $ chop 1 $ st "1(5,8)" $ "grime" # n "{41 25 13 37 37}%4" # l 0.6
+            -- ,st "{1(3,8)}%2" $ "cl4" #n "<4 9>" # l 1 # speed "1 1 2 1"
+            ,func2 $ fx' $ density "1 2 [1 2] 1" $ st "1(5,8)" $ "grime" # n ("42" |+| choose[0 ,4, -1])# r 0.7  # l 1 
         ] 
         # orbit 1
     p "d2"
         $ (
-            big 0.3 1
-            -- .filter "lpf" 40 "1/
-            .fx
+            -- .func1 
+            fx
+            .func1
+            .st "{1 0 [0 1] 1}%4"
+            .st "{1}%1"
         )
         $ stack [
             ""
-            ,s "[~ oh]*1 " # r 0.9 
-            , s "[~ cp][~ cp]" # r 0.9 # crush 4 # n 1
-            -- , "kik(3,4)%2" # n 2
-        ] 
-        # speed "1 -1 -1 1/2" # gain (sine) 
-        # legato 0.8
+            ,func2 $ big 0.5 1.3 $ "~ super808" # r 0.1 # rate "0.3" # n (3) # ring 0.5 # squiz 0.5 # hpf 200-- # voice "0.6"
+            ,big 0.6 1 $ st "{1(3,8)}%1" $ "kik" # n 4 # r 0.8 
+            ,big 0.3 1 $ "yaoya" # nt "-4" # cut 1
+        ]
         # orbit 2
     p "brk"
         $ (
@@ -92,36 +91,19 @@ do
             -- .filter "lpf" 40 (2/8)
             .fx
             .send2
+            -- .chop 2
         )
         $ stack [
             ""
-            ,st "1*16" 
-            $ randslice 16 $ la "4" $ "jj1" # n 26# release 0.5
+            ,st "1*16" $ randslice 16 $ la "4" $ "jj1" # n 26 # release 0.5
         ]  
         -- # crush "[4 .. 8]*4" 
-        # gain 1.1
+        # gain 1
         -- # speed "1" 
-        -- # speed "1 -1 -1 1/2"
+        # speed "1 -1 -1 1/2"
         -- # release 0.4 
         # legato "0.8" 
         # orbit 3
-    p "cl"
-        $ (
-            void
-            .filter "lpf" 80 (3/8)
-            -- .fx
-            .sub
-        )
-        $ st "1 [0 1] [0 1 ] [1] "
-        $ "cl7"
-        # irand(50)
-        # l 1
-        -- # triode ("0.9")
-        # shape 0.4
-        -- |* gain (saw*1.2)
-        # speed "1 1 [0 2] 1"
-        # release 0.95    
-        #orbit 4
     trackio
 
 d2 silence 
