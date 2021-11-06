@@ -7,10 +7,9 @@ do
     let trackio = do  
         -- p "brk" silence 
         p "pad" silence -- previous
-        p "d3" silence -- previous
         -- p "d1" silence -- second
         -- p "d2" silence -- first
-        p "cl" silence
+        -- p "cl" silence
         p "" silence 
     let fx = 
             void
@@ -19,9 +18,10 @@ do
                 .(# hpf (fast 0.5 $ "50 .. 1" * "100"))
                 .(# hpq 0.1)
             )
-            .whenmod 4 4 (
+            .whenmod 4 0
+             (
                 void
-                .filter "hpf" 80 (2/16)
+                .filter "lpf" 20 (4/16)
             )
         fx' =
             void
@@ -29,13 +29,13 @@ do
                 void
                 -- . density "<1 1 1 2> "
                 . whenmod 4 0 (
-                     chop 2
+                     chop 1
                      .autopan
                 )
             )   
-            .whenmod 4 3 (
+            .whenmod 4 1 (
                 void
-                .stut' 2 ("<1 2>"/32) (
+                .stut' 4 ("<1 2 4>"/32) (
                     degradeBy 0.02
                     .(|* speed "1 .. 2 .. -1")
                 )
@@ -51,26 +51,27 @@ do
     ---
     let sub = 
             void 
-            -- .send2 
+            .send2 
             . fx'
     p "d1"
         $ (
             big 0.3 1
             -- .func1 
             .fx
+            -- .fx'
         )
         $ stack [
             ""
             ,sub $ density "4 [8 2]" $ "[~ sn:2]" # l 1
             ,"bd(3,8)%4" # n 1 # g 1.4 # dist 0.8 # l 0.5
-            ,"grime" #n "<4 9>" # l 1 # speed "1 1 2 1"
-            ,sub $ density "4 2 4 1" $ "cl2" # n "<23>"  # l 0.8
-            --- ,func2 $ density "1 2 2 1" $ "cl2" # n "<23>"  # l 0.8 # speed "1 2 1 4"
+            -- ,"grime" #n "<4 9>" # l 1
+            -- ,sub $ density "4 2 4 1" $ "cl2" # n "<23>"  # l 0.8
+            ,la "<1 1 1 2>" $ func $ density "1 2 2 1" $ "cl2" # n "<23>"  # l 0.8
         ] 
         # orbit 1
     p "d2"
         $ (
-            big 0.2 1
+            big 0.2 0.9
             .filter "lpf" 40 "1/8"
             .func1
             .fx
@@ -85,7 +86,7 @@ do
             ""
             ,s "[~ oh]*1 " # r 0.9 
             , s "[~ cp][~ cp]" # r 0.9 # crush 4 # n 1
-            , "kik(3,4)%2" # n 2
+            -- , "kik*4" # n 2
         ] 
         -- # speed "1 -1 -1 1/2" # gain (sine) 
         # legato 0.8
@@ -104,9 +105,9 @@ do
         $ la 2
         $ stack [
             ""
-            ,slice 8 "<0 6>" $ "slowbreaks*4" # release 0.5
+            ,slice 8 "<0 6>" $ "slowbreaks" # release 0.5
         ]  
-        # crush "[4 .. 8]*4" 
+        -- # crush "[4 .. 8]*4" 
         # gain 1.3
         -- # speed "1" 
         # speed "1 -1 -1 1/2"
@@ -120,7 +121,7 @@ do
             -- .fx
             .sub
         )
-        $ st "1 [0 1] [0 1 ] [1] "
+        -- $ st "1 [0 1] [0 1 ] [1] "
         $ "cl7"
         # irand(50)
         # l 1

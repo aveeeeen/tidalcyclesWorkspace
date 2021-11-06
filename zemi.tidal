@@ -1,16 +1,15 @@
-setcps(140/240)
+setcps(120/240)
 
     hush
 
 do 
     let trackio = do  
-        -- p "pad" silence
+        p "pad" silence
+        p "d1" silence -- sub
         p "d2" silence -- main drumset
-        p "d3" silence -- sub
+        -- p "d3" silence -- main drumset
         p "" silence 
-    let r1 = density "2 [4 6] 1 1 " . (#gain "<1 1 0 1>")
-        r2 = density "1 2 2 8" .(#gain"<1 [1 0 1 1] 0 [1 0]>")
-    let fx = 
+    let fx' = 
             void
             .whenmod 8 7(
                 void
@@ -19,75 +18,71 @@ do
             )
             .whenmod 4 4 (
                 void
-                .filter "hpf" 80 (6/16)
-            )
-            -- .density (slow 4 $ range 20 1 sine)
-        fx' =
-            void
-            .whenmod 4 3 (
-                void
-                -- . density "<1 1 1 2> "
-                . whenmod 4 0 (
-                     chop 2
-                     .autopan
-                )
-            )   
+                .filter "lpf" 80 (6/16)
+            ) 
+    let fx = 
+            fx'
             .whenmod 4 0 (
                 void
-                .stut' 4 ("<1 2>"/32) (
-                    degradeBy 0.02
-                    .(|* speed "1 .. 2 .. -1")
+                .chop 2
+                -- . density "2 -2 [2 1] -1 "
+                . whenmod 4 4 (
+                     autopan
                 )
-            )         
-            . (# legato 1)
+                .stut' 2 ("4"/32) (
+                    degradeBy 0.02
+                    .jux rev
+                    .(|* speed "1 .. 2 .. -1")
+                    .(|* gain (sine + saw * 2))
+                )
+            )            
+            -- . (# legato 1)
             -- . swng
         func =
             void
             -- .func1
             .func2
             .func3
-    let sub = 
-            void 
-            .send2 
-            . fx'
     ---
     ---
     p "pad"
         $(
             void
-            -- .r2
             .big 0.2 1
             .fx
-            -- .sub
             .func
+            .send2
         )
         $ (
             void
             -- .density "1 [2] [4] [1]"-- (slow 4 $ range 22 1 saw)
-            .st "1*8"
+            .st -- "1"
+             "1"
             .slice 32
                 -- "<23>"
                 "<23 25 5 31>" 
                 --"[0 .. 24]/8"
                 -- "<2 [5 12] 7 9>" -- 7 9 
-            .la 16
+            .la 32
         ) 
-        $ "zemi" # n 1 # l 1 # speed (choose [1,-1]) 
+        $ "zemi" # n 1 # l 1 -- # speed (choose [1,-1]) 
         # hpf 100
         # orbit 1
-    p "d3"
+    p "d1"
         $ (
             void
-            .big 0.4 1
-            -- .func
+            .big 0 0.8
+            .func
             .send2 
             .fx
-            -- .r1
         )
         $ stack [
             ""
             -- ,la 2 $ ply "<2 4>" $ "[~ :1]" # gain 0.7 
-            ,randslice 16 $ la 2 $ "tokyo" # n 4
+            ,density 
+                --"1 [4] [1] 2" 
+                "1"
+            $ slice 16 "3 5 14 2 23 45 12 1 2" $ la 8 $ "tokyo" # n 0 
         ] 
         # gain 0.4
         # l 0.8
@@ -98,14 +93,40 @@ do
             void
             .func
             .fx
-            .density "2 4 4 2"
         )
         $stack [
             ""
             ,"kik [~ kik] " #n 1
-            ,"~ cp ~ [cp]" #n 1
+            -- ,"~ cp ~ [cp]" #n 1
             ,"hh*16"
-            ,density "2 [3 4] [8]" $ degradeBy 0.5 $ "[~ oh]"
+            --,density "2 [3 4] [8]" $ degradeBy 0.5 $ "[~ oh]"
         ]
+        -- # hpf 300
         # orbit 3
+    p "d3"
+        $ (
+            void
+            .fx'
+            .big 0.2 1
+            .chop 4
+            .stut' "2" (2/16) (
+                (|* speed "1 -1 -1/2 1")
+            )
+            .density (slow 4 $ range 4 1 saw)
+            .stut' "16" (0.001 * "10 4 20 1") (
+                void
+                .(# gain (range 1 0.1 $ saw ))
+                .degradeBy 0.02
+                .(|* speed (choose[1])) 
+            )
+            .jux rev
+        )
+        $stack [
+            ""
+            ,"bd" #n 2
+            ,"~ clap ~ [~]" #n 1
+            -- ,density "2 [3 4] [8]" $ degradeBy 0.5 $ "[~ oh]" # r 0.4 # hpf 8000
+        ]
+        # l 1
+        # orbit 4
     trackio
