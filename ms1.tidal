@@ -7,8 +7,8 @@ do
     let trackio = do  
         p "p" silence 
         p "ms" silence 
-        -- p "intro" silence 
-        -- p "d" silence 
+        p "intro" silence 
+        p "d" silence 
         p "td" silence
         p "" silence 
     let fx = 
