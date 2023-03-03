@@ -1,0 +1,146 @@
+do
+    let trackio = do  
+            p "d1" silence -- main drums
+            p "d2" silence -- clap
+            p "b" silence -- break sample
+            -- p "p" silence -- pads
+            -- p "ms20" silence -- bass pads
+            p "" silence 
+        fx = 
+            void
+            .whenmod 8 8(
+                void
+                .(# hpf (fast 0.5 $ "50 .. 1" * "80"))
+                .(# hpq 0.1)
+            )
+            .whenmod 8 8 (
+                void
+                    .filter "lpf" 80 (1/8)
+            )
+        fx' = 
+            void
+            .whenmod 4 0 (
+                void
+                . whenmod 4 0 (
+                        void
+                        .st "1*16"
+                        .(#r 0.1)
+                )
+            )         
+            -- . swng
+        fx'' = void -- .(#r "0.6*16")
+        func =
+            void
+            .func1
+            .func2
+            .func3
+        sub = 
+            void 
+            .send2
+            . fx'
+    setcps (70/240)
+    p "midi"
+         $ (
+            void
+            .func1
+            .fx .fx' .fx''
+        )
+        --- $append (irand 4)
+        $ slow 1 $ n "2 2 2 0 " |+| n "<12 5 7>"  # s "midi" # l 1
+        #orbit 5 -- # r 0.9
+    p "d2"
+        $ (
+            void
+            .func1
+            . fx 
+            --  . filter "lpf" 40 "1"
+            . sub
+        ) $ stack 
+        [ 
+            ""
+            ,st "1*8" $ big 0.7 1 $ slice 32 "{22 12 44 2 32 21 34 21 4}%8" $ "tokyo" #n 4 # l 0.8 # speed 1 # crush "4 .. 1"
+            , st "1 [1 1] [0 1] [0]" $ big 0.9 1  $ "bd" # l 0.8
+            -- , fast 4 $ st "0 0 1 0" $ big 0.7 1 $ "sn"
+        ]
+    p "p"
+        $ (
+            func
+            . fx . fx'
+            .delunit ("{8 4 1 6 1}%2" * 0.1) ("<2 4>"/32) ("{9}%8 "* "0.1")
+            .roomunit ("{1 7 1 9 3 1}%4 " * "0.1") 0.9 ("{8}%8 "* "0.1")
+            . filter "lpf" 40 "1"
+            -- . sub
+            -- . chop "2"
+        )
+        -- $ st "1 0. 0 1 .1 0 .1 " 
+        $ slice 16 "<2>"
+        $ stack [
+            "" 
+            ,big 0.1 1 $ "amb" # speed ("0.5" * "<1>") # nt 3 # n 1 # gain (slow 2 $ sine)
+        ] # orbit 5 # l 1
+    p "ms20" -- bassdrums and hihats
+        $ (
+            void
+            -- .filter "lpf" 10 "1*8"
+            .func2
+            -- .st "1*16"
+            .fx .fx'
+            .delunit ("{8 1 2 9 1 1}%2" * 0.1) ("<2 4>"/32) ("{1}%8 "* "0.1")
+            .roomunit ("1.5") 0.9 ("8")
+        ) 
+        $ stack
+        [
+            ""
+            , big 0.3 1 $ s "in" # gain (sine/2) -- # l 1  -- # crush ("1 .. 6 ") 
+        ]
+        # speed "-0.5"
+        -- # l 0.8
+        # orbit 3
+    trackio
+
+hush
+
+    p "d1" -- bassdrums and hihats
+        $ (
+            void
+            .func1
+            .fx .fx' .fx''
+            .whenmod 8 7 (
+                send2
+            )
+            .whenmod 4 3(
+                stut' 2 (1/16) (
+                    filter "lpf" 40 "1/4"
+                    .(|* gain 0.94)
+                    .(|* r 0.4)
+                )
+            )
+        )
+        -- $ st ("{1*1}%4" ) 
+        $ stack
+        [
+            ""
+            ,big 0.2 1.0 
+            -- $ (st "{[1*2 0] ~ [1 0] [0 1]}") 
+            $ st "1(5,8)" $ "kik" # speed 0.7 #n "4" -- # r 1.2 -- # nt "-4" 
+            -- ,big 0.2 1 $ st "[1 1?]*8" $ "hh*4" # n "1 . 0 1 . 1 . 1 0"
+            ,big 0.7 1 $ st "0 0 1 0"  $ "clap"  # crush ("1 .. 6 ") 
+        ]
+        # l 1
+        # orbit 1
+    p "b" -- breaks
+        $ (
+            void
+            .func
+            .jux (#speed  "0.5")
+            .filter "lpf" 80 "1*4"
+            -- .sometimes  (jux (|* speed "-2") . sub)
+            .big 0.1 0.8
+            .fx
+            -- .chop 2
+        )
+        $ st "1*8" 
+        $ iter 4 . slice 16 (irand 24) $ la 4 $ "jj1"
+        -- # r 0.2 
+        # l 1 # n 56 # orbit 4 -- # hpf 500
+    

@@ -1,0 +1,32 @@
+
+let speedMod = speed ("[-2 1 -0.5 1]" * "0.5")
+    chain =
+        void
+        .stut' 2 (6/32) (
+            jux (0.25 ~>) 
+            .(|* gain 0.9) 
+            .(#speedMod)
+        )
+        .struct "1*16"
+        -- .slice 7 "<13 34 2> .. <5 2 43>"
+    flux = (#nt (fast 8 $ choose[0,5,7,12]))
+    
+
+d1 $
+send2 
+$
+stack[
+    flux $
+    stack
+    [
+        ""
+        ,filter "lpf" 10 (4/3) $ chain $ fast 0.5 
+        $ (|* speed ("-2 1 -0.5 1 ~>" * "0.5 .. 2")) 
+        $ sound "{808mt*6}%8" # n (slow 2 $ range 0 10 $ rand)  
+        ,struct "1*16" $ sound "ades4:4" # release (fast 16 $ choose [0.01,0.4])
+        ,filter "hpf" 100 (1/8) $ sound "electro1*16" # release (fast 16 $ choose [0.01,0.8])
+    ] # l (fast 8 $ choose [0.01,0.8,0.3]) # orbit 2
+    ,big 0.5 1 $ sound "bd [~ 808sd:4] [~] [~ bd]" 
+] # gain (fast 6 $ "1 0 1 0 1 0 1 0")
+
+hush

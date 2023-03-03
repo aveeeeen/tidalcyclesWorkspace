@@ -1,0 +1,15 @@
+
+do
+    let seq = "[1 0 1 0] [1 1 0 1] [1 0 1 1] [0 0 1 1]"
+        seq2 = "0.25" 
+    d1 
+    $ struct seq
+    $
+    stack[
+        "",
+        stut' 2 (6/32) (#speed ((fast 4 $ "1 1 -1 1") * (fast 16 $ choose [1,2,0.5]))) 
+        $ s "bd" # gain (fast 4 $ "1 0") # l 0.9 
+        ,s "808mc" # speed seq2 # gain (fast 4 $ iter 6 $ "1 0 1 0 1 1")
+    ]
+
+hush

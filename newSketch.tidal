@@ -1,0 +1,22 @@
+do
+    let seq_saw min max rate = (fast rate $ (range min max $ saw))
+    let seq_sq min max rate = (fast rate $ (range min max $ square))
+    let flux = striate $ choose[1,2]
+    d1 
+        $ (
+            void
+            .func2 
+            .send2
+            .slow 8
+        ) 
+        $ every (irand 1) (flux)
+        $ stack
+        [
+            ""
+            ,ply (choose [16,4,2]) $ "bd" 
+            ,ply (choose [1,8]) $ "~ clap" 
+            ,fast (irand 2) $ "hh*16"
+            ,ply (choose [1,2,4]) $ st "1*8" $ slice 16 (irand 16) $ "tokyo" #n 2
+        ] # lpf (seq_saw 20 8000 0.5) # gain (seq_sq 0 1.6 "2") # r 0.03
+
+hush
